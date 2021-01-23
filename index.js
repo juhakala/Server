@@ -23,7 +23,6 @@ app.use(express.static('./build'));
 // redirect http to https
 redir.get('/', (req, res) => {
 	if (!req.secure) {
-//		console.log('redirecting');
 		res.redirect('https://' + req.headers.host + req.url);
 	}
 })
