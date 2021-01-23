@@ -1,0 +1,44 @@
+.navBar {
+	background: #333;
+	display: flex;
+	overflow: auto;
+}
+.navItem {
+	align-self: center;
+	padding: 14px;
+	padding-bottom: 16px;
+}
+.navItem:hover {
+	background: grey;
+}
+.navLink {
+	text-decoration: none;
+	color: white;
+}
+.navFooter {
+	width: 100vw;
+	position: absolute;
+	bottom: 0;
+	flex-direction: column;
+}
+.navName {
+	margin: 0;
+	color: white;
+	white-space: nowrap;
+}
+#navNameParent {
+	align-self: center;
+}
+#navName1, #navName2{
+	cursor: default;
+}
+#navName2 {
+	display: none;
+	padding: 0px 18px 0px 18px;
+}
+#navNameParent:hover :nth-child(1) { 
+	display: none; 
+}
+#navNameParent:hover :nth-child(2) { 
+	display: block; 
+}
