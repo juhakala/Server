@@ -1,4 +1,5 @@
 // Dependencies
+const url = require('url');
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
@@ -18,7 +19,7 @@ const credentials = {
 	ca: ca
 };
 
-app.use(express.static('./build'));
+app.use('/', express.static('./build'));
 
 // redirect http to https
 redir.get('/', (req, res) => {
@@ -26,6 +27,28 @@ redir.get('/', (req, res) => {
 		res.redirect('https://' + req.headers.host + req.url);
 	}
 })
+
+app.get('/api/login', (req, res) => {
+	const a = req.headers.referer;
+	if (a && a === 'https://juhakala.com/') {
+		console.log('---a---');
+		console.log(a);
+		const b = url.parse(a);
+		if (b && b.hostname && b.hostname === 'juhakala.com') {
+			console.log('---b---');
+			console.log(b);
+			console.log('--b.h--');
+			console.log(b.hostname);
+			res.status(200);
+		        res.set('Content-Type', 'text/plain');
+		        res.send('You found me?');
+		} else {
+			res.status(403).end();
+		}
+	} else {
+		res.status(403).end();
+	}
+});
 
 // Starting both http & https servers
 const httpServer = http.createServer(redir);
