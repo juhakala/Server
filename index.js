@@ -2,12 +2,12 @@
 const url = require('url');
 const fs = require('fs');
 const http = require('http');
-const https = require('https');
+//const https = require('https');
 const express = require('express');
 
 const app = express();
-const redir = express();
-
+//const redir = express();
+/*
 // Certificate
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/juhakala.com/privkey.pem', 'utf8');
 const certificate = fs.readFileSync('/etc/letsencrypt/live/juhakala.com/cert.pem', 'utf8');
@@ -18,23 +18,23 @@ const credentials = {
 	cert: certificate,
 	ca: ca
 };
-
+*/
 app.use('/', express.static('./build'));
-
+/*
 // redirect http to https
 redir.get('/', (req, res) => {
 	if (!req.secure) {
 		res.redirect('https://' + req.headers.host + req.url);
 	}
 })
-
+*/
 app.get('/api/login', (req, res) => {
 	const a = req.headers.referer;
-	if (a && a === 'https://juhakala.com/') {
+	if (a && a === 'http://localhost:3001/') {
 		console.log('---a---');
 		console.log(a);
 		const b = url.parse(a);
-		if (b && b.hostname && b.hostname === 'juhakala.com') {
+		if (b && b.hostname && b.hostname === 'localhost') {
 			console.log('---b---');
 			console.log(b);
 			console.log('--b.h--');
@@ -51,13 +51,14 @@ app.get('/api/login', (req, res) => {
 });
 
 // Starting both http & https servers
-const httpServer = http.createServer(redir);
-const httpsServer = https.createServer(credentials, app);
+const httpServer = http.createServer(app); //redir
+//const httpsServer = https.createServer(credentials, app);
 
-httpServer.listen(80, () => {
-	console.log('HTTP Server running on port 80');
+httpServer.listen(3001, () => {
+	console.log('HTTP Server running on port 3001');
 });
-
+/*
 httpsServer.listen(443, () => {
 	console.log('HTTPS Server running on port 443');
 });
+*/
