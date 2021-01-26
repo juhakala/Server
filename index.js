@@ -19,6 +19,18 @@ const credentials = {
 	ca: ca
 };
 
+function checkOrig(req) {
+	const a = req.headers.referer;
+	if (a && a === 'https://juhakala.com/') {
+		const b = url.parse(a);
+		if (b && b.hostname && b.hostname === 'juhakala.com') {
+			return (true);
+		}
+	} else {
+		return false;
+	}
+};
+
 app.use('/', express.static('./build'));
 
 // redirect http to https
@@ -29,22 +41,29 @@ redir.get('/', (req, res) => {
 })
 
 app.get('/api/login', (req, res) => {
-	const a = req.headers.referer;
-	if (a && a === 'https://juhakala.com/') {
-		console.log('---a---');
-		console.log(a);
-		const b = url.parse(a);
-		if (b && b.hostname && b.hostname === 'juhakala.com') {
-			console.log('---b---');
-			console.log(b);
-			console.log('--b.h--');
-			console.log(b.hostname);
-			res.status(200);
-		        res.set('Content-Type', 'text/plain');
-		        res.send('You found me?');
-		} else {
-			res.status(403).end();
-		}
+	if (checkOrig(req) === true) {
+		res.status(200);
+		res.set('Content-Type', 'text/plain');
+		res.send('You found me?');
+	} else {
+		res.status(403).end();
+	}
+});
+
+app.get('/api/messages/:count', (req, res) => {
+	if (checkOrig(req) === true) {
+		const count = req.params.count;
+		res.status(200);
+		res.set('Content-Type', 'text/plain');
+		//const data = connection.query(`SELECT * from 'messages' ORDER BY id DESC LIMIT ${count}, 10`, function (error, results, fields) {
+            //  if (error) throw error;
+            //  console.log('The solution is: ', results[0].solution);
+		//tmp data
+		const data = [
+			{id:12, author:'juha', time:start, content:'mysql tabel is on its way'},
+			{id:13, author:'justus', time:start, content:'need usb first for saving data'}
+		]
+		res.send(JSON.stringify(data));
 	} else {
 		res.status(403).end();
 	}
