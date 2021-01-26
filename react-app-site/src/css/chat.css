@@ -28,3 +28,19 @@
 .chatHeadImg {
 	height: 20px;
 }
+.chatMessage {
+	background: white;
+	border-radius: 10px;
+	margin-right: 20px;
+}
+.chatLoadBtn {
+	cursor: pointer;
+	background: black;
+	color: white;
+	width: fit-content;
+	white-space: nowrap;
+	margin: auto;
+	padding: 4px;
+	border-radius: 10px;
+	margin-top: 5px;
+}
