@@ -6,6 +6,17 @@ const http = require('http');
 const express = require('express');
 
 const app = express();
+function checkOrig(req) {
+	const a = req.headers.referer;
+	if (a && a === 'http://localhost:3006/') {
+		const b = url.parse(a);
+		if (b && b.hostname && b.hostname === 'localhost') {
+			return (true);
+		}
+	} else {
+		return false;
+	}
+};
 //const redir = express();
 /*
 // Certificate
@@ -29,22 +40,48 @@ redir.get('/', (req, res) => {
 })
 */
 app.get('/api/login', (req, res) => {
-	const a = req.headers.referer;
-	if (a && a === 'http://localhost:3001/') {
-		console.log('---a---');
-		console.log(a);
-		const b = url.parse(a);
-		if (b && b.hostname && b.hostname === 'localhost') {
-			console.log('---b---');
-			console.log(b);
-			console.log('--b.h--');
-			console.log(b.hostname);
-			res.status(200);
-		        res.set('Content-Type', 'text/plain');
-		        res.send('You found me?');
-		} else {
-			res.status(403).end();
-		}
+	if (checkOrig(req) === true) {
+		res.status(200);
+		res.set('Content-Type', 'text/plain');
+		res.send('You found me?');
+	} else {
+		res.status(403).end();
+	}
+});
+
+/*
+	single message obj:
+	{ id, author, time, content }
+*/
+const start = Date.now();
+/*
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'juhakala',
+  password : 'from file somewhere',
+  database : 'my_db'
+});
+*/
+
+//connection.connect();
+
+
+app.get('/api/messages/:count', (req, res) => {
+	if (checkOrig(req) === true) {
+		const count = req.params.count;
+		console.log('count is: ' ,count);
+		res.status(200);
+		res.set('Content-Type', 'text/plain');
+		//const data = connection.query(`SELECT * from 'messages' ORDER BY id DESC LIMIT ${count}, 10`, function (error, results, fields) {
+			//  if (error) throw error;
+			//  console.log('The solution is: ', results[0].solution);
+		//tmp data
+		const data = [
+			{id:12, author:'juha', time:start, content:'mysql tabel is on its way'},
+			{id:13, author:'justus', time:start, content:'need usb first for saving data'}
+		]
+		res.send(JSON.stringify(data));
 	} else {
 		res.status(403).end();
 	}
