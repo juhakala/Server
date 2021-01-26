@@ -1,9 +1,12 @@
 // Dependencies
+const dotenv = require('dotenv');
+dotenv.config();
 const url = require('url');
 const fs = require('fs');
 const http = require('http');
 //const https = require('https');
 const express = require('express');
+const mysql = require('mysql');
 
 const app = express();
 function checkOrig(req) {
@@ -49,39 +52,30 @@ app.get('/api/login', (req, res) => {
 	}
 });
 
-/*
-	single message obj:
-	{ id, author, time, content }
-*/
 const start = Date.now();
-/*
-var mysql      = require('mysql');
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'juhakala',
-  password : 'from file somewhere',
-  database : 'my_db'
+
+var pool  = mysql.createPool({
+	connectionLimit : 10,
+ 	host     : 'localhost',
+ 	user     : process.env.DB_USER,
+ 	password : process.env.DB_SECRET,
+ 	database : 'juhakala'
 });
-*/
-
-//connection.connect();
-
 
 app.get('/api/messages/:count', (req, res) => {
 	if (checkOrig(req) === true) {
 		const count = req.params.count;
-		console.log('count is: ' ,count);
+		console.log('count really is: ' ,count);
 		res.status(200);
 		res.set('Content-Type', 'text/plain');
-		//const data = connection.query(`SELECT * from 'messages' ORDER BY id DESC LIMIT ${count}, 10`, function (error, results, fields) {
-			//  if (error) throw error;
-			//  console.log('The solution is: ', results[0].solution);
-		//tmp data
-		const data = [
-			{id:12, author:'juha', time:start, content:'mysql tabel is on its way'},
-			{id:13, author:'justus', time:start, content:'need usb first for saving data'}
-		]
-		res.send(JSON.stringify(data));
+		pool.getConnection(function(err, connection) {
+			if (err) throw err;
+			connection.query(`SELECT * FROM messages ORDER BY id DESC LIMIT ${count}, 1`, function(error, qres, fields) {
+				connection.release();
+				if (error) throw error;
+				res.send(JSON.stringify(qres));
+			});
+		})
 	} else {
 		res.status(403).end();
 	}
