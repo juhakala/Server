@@ -34,6 +34,13 @@ function checkOrig(req) {
 	}
 };
 
+function escapeHTML(s) { 
+    return s.replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+}
+
 app.use('/', express.static('./build'));
 
 // redirect http to https
@@ -63,13 +70,15 @@ var pool  = mysql.createPool({
 
 app.get('/api/messages/:count', (req, res) => {
  	if (checkOrig(req) === true) {
-		 const count = req.params.count;
+		const count = parseInt(req.params.count);
+		if (count === NaN)
+			res.status(403).end();
 		console.log('count really is: ' ,count);
 		res.status(200);
 		res.set('Content-Type', 'text/plain');
 		pool.getConnection(function(err, connection) {
 			if (err) throw err;
-			connection.query(`SELECT * FROM messages ORDER BY id DESC LIMIT ${count}, 1`, function(error, qres, fields) {
+			connection.query(`SELECT * FROM messages ORDER BY id DESC LIMIT ?, 1`, [count], function(error, qres, fields) {
 				connection.release();
 				if (error) throw error;
 				res.send(JSON.stringify(qres));
@@ -83,6 +92,32 @@ app.get('/api/messages/:count', (req, res) => {
 // Starting both http & https servers
 const httpServer = http.createServer(redir);
 const httpsServer = https.createServer(credentials, app);
+
+const io = require('socket.io')(httpsServer);
+
+io.on('connection', (socket) => { 
+	console.log('new client connected');
+	socket.emit('connection', null);
+	socket.on('disconnect', (reason) => {
+		console.log('disconnect', socket.id);
+	});
+	socket.on("chat", (arg) => {
+		pool.getConnection(function(err, connection) {
+			const send_date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+			if (err) throw err;
+			arg = escapeHTML(arg);
+			connection.query(`INSERT INTO messages (author, content, send_date) VALUES (
+				'testuser', ?, '${send_date}')`, [arg],
+			function(error, qres, fields) {
+				const id = qres.insertId;
+				console.log(id);
+				connection.release();
+				if (error) throw error;
+				io.emit('addmessage',  {id:id, author:'testuser', content:arg, send_date:send_date });
+			});
+		})
+	});
+});
 
 httpServer.listen(80, () => {
 	console.log('HTTP Server running on port 80');
