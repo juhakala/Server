@@ -1,4 +1,5 @@
 import "./../css/chat.css"
+import miniU from './../pics/miniU.png'
 import upArrow from './../pics/arrow-up.png'
 import downArrow from './../pics/arrow-down.png'
 import { useEffect, useState } from "react"
@@ -30,11 +31,15 @@ const ChatWrite = ({ socket }) => {
 const Message = ({ message }) => {
 	const start = new Date(message.send_date);
 	return (
-		<li>
-			<div className='chatMessage'>
-				<p>{start.toLocaleDateString("en-FI")} {start.toLocaleTimeString("fi-EN", {hour: '2-digit', minute:'2-digit'})}</p>
+		<li className="left"><span className="pull-left">
+				<img src={miniU} alt="User Avatar" className="img-circle" />
+			</span>
+			<div className='chat-body'>
+				<div>
+					<strong className="name">{message.author}</strong><small className="pull-right text-muted">
+						<span className="clock">&#128346;</span>{start.toLocaleDateString("en-FI")} {start.toLocaleTimeString("fi-EN", {hour: '2-digit', minute:'2-digit'})}</small>
+				</div>
 				<p>{message.content}</p>
-				<p>-{message.author}</p>
 			</div>
 		</li>
 	)
@@ -75,13 +80,12 @@ const ChatArea = ({ socket }) => {
 	}
 	return (
 		<div className="chatArea">
-			<div>
+			<div className="loadBtnDiv">
 				{more === true ? <p className='chatLoadBtn' onClick={loadMoreMessages}>load more</p> : <p className='chatLoadBtn'>all loaded</p>}
 			</div>
 			<ul>
 				{messages.map(message => <Message key={message.id} message={message}/>)}
 			</ul>
-			<div className="chatBottom"></div>
 		</div>
 	)
 }

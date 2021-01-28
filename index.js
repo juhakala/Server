@@ -20,6 +20,13 @@ function checkOrig(req) {
 		return false;
 	}
 };
+
+function escapeHTML(s) { 
+    return s.replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+}
 //const redir = express();
 /*
 // Certificate
@@ -64,13 +71,15 @@ var pool  = mysql.createPool({
 
 app.get('/api/messages/:count', (req, res) => {
 	if (checkOrig(req) === true) {
-		const count = req.params.count;
+		const count = parseInt(req.params.count);
+		if (count === NaN)
+			res.status(403).end();
 		console.log('count really is: ' ,count);
 		res.status(200);
 		res.set('Content-Type', 'text/plain');
 		pool.getConnection(function(err, connection) {
 			if (err) throw err;
-			connection.query(`SELECT * FROM messages ORDER BY id DESC LIMIT ${count}, 4`, function(error, qres, fields) {
+			connection.query(`SELECT * FROM messages ORDER BY id DESC LIMIT ?, 6`, [count], function(error, qres, fields) {
 				connection.release();
 				if (error) throw error;
 				res.send(JSON.stringify(qres.reverse()));
@@ -111,8 +120,9 @@ io.on('connection', (socket) => { /* socket object may be used to send specific 
 		pool.getConnection(function(err, connection) {
 			const send_date = new Date().toISOString().slice(0, 19).replace('T', ' ');
 			if (err) throw err;
+			arg = escapeHTML(arg);
 			connection.query(`INSERT INTO messages (author, content, send_date) VALUES (
-				'testuser', '${arg}', '${send_date}')`,
+				'testuser', ?, '${send_date}')`, [arg],
 			function(error, qres, fields) {
 				const id = qres.insertId;
 				console.log(id);
