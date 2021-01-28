@@ -2,6 +2,8 @@
 	background: #333;
 	display: flex;
 	overflow: auto;
+	font-family: monospace;
+	height: 48px;
 }
 .navItem {
 	align-self: center;
