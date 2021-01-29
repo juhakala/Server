@@ -1,7 +1,7 @@
 // Dependencies
 const BASE_URL = 'https://juhakala.com/';
 const BASE_HOST = 'juhakala.com';
-const MODE = process.env.NODE_ENV.trim();
+//const MODE = process.env.NODE_ENV.trim();
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -70,7 +70,7 @@ app.get('/api/messages/:count', (req, res) => {
 		res.set('Content-Type', 'text/plain');
 		pool.getConnection(function(err, connection) {
 			if (err) throw err;
-			connection.query(`SELECT * FROM messages ORDER BY id DESC LIMIT ?, 1`, [count], function(error, qres, fields) {
+			connection.query(`SELECT * FROM messages ORDER BY id DESC LIMIT ?, 8`, [count], function(error, qres, fields) {
 				connection.release();
 				if (error) throw error;
 				res.send(JSON.stringify(qres.reverse()));
@@ -94,7 +94,7 @@ const httpsServer = https.createServer(credentials, app);
 const io = require('socket.io')(httpsServer);
 
 io.on('connection', (socket) => { 
-	console.log('new client connected');
+//	console.log('new client connected');
 	socket.emit('connection', null);
 	socket.on('disconnect', (reason) => {
 		console.log('disconnect', socket.id);
@@ -110,7 +110,7 @@ io.on('connection', (socket) => {
 				'testuser', ?, '${send_date}')`, [arg],
 			function(error, qres, fields) {
 				const id = qres.insertId;
-				console.log(id);
+//				console.log(id);
 				connection.release();
 				if (error) throw error;
 				io.emit('addmessage',  {id:id, author:'testuser', content:arg, send_date:send_date });
