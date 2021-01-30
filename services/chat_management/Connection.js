@@ -1,3 +1,4 @@
+var myf = require('./../my_functions');
 
 module.exports = function (io, pool) {
 	io.on('connection', (socket) => { 
