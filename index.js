@@ -22,8 +22,10 @@ var pool  = mysql.createPool({
 });
 
 app.use('/', express.static('./build'));
+app.use('/maps', express.static(process.env.MAP_DIR));
 require('./services/user_management/Login')(app);
 require('./services/chat_management/Messages')(app, pool);
+require('./services/map_management/Create')(app);
 
 const credentials = {
 	key: fs.readFileSync(process.env.LEPV, 'utf8'),

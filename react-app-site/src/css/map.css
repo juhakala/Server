@@ -1,0 +1,11 @@
+.mapBody {
+	overflow: hidden;
+}
+.mapWrap {
+	margin: auto;
+	max-height: 70vh;
+	max-width: 70vh;
+	min-height: 70vh;
+	min-width: 70vh;
+	background: grey;
+}

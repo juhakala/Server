@@ -7,6 +7,9 @@ const Header = () => {
 	return (
 		<div className="navBar">
 			<div className="navItem">
+				<a className="navLink" href="/#/map">Map</a>
+			</div>
+			<div className="navItem">
 				<a className="navLink" href="/#/login">Login</a>
 			</div>
 			<div className="navItem">
