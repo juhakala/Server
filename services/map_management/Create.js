@@ -7,7 +7,7 @@ module.exports = function (app) {
 	app.get('/api/newmap', (req, res) => {
 		res.status(403).end('temporaly block for now'); //tmp for now
 
-		const picture = sharp({
+/*		const picture = sharp({
 			create: {
 				width: 10000,
 				height: 10000,
@@ -24,11 +24,11 @@ module.exports = function (app) {
 				res.send('http://localhost:3001/maps/base.png');
 			});
 		})
-	}),
+*/	}),
 	app.get('/api/createmap/:x/:y', (req, res) => {
 		res.status(403).end('temporaly block for now'); //tmp for now
 
-		const arr = [];
+/*		const arr = [];
 		const style1 = 'add';
 		const aa = 0.1;
 //		for (var i = 0; i < 100; i++) {
@@ -55,5 +55,5 @@ module.exports = function (app) {
 				res.send('http://localhost:3001/maps/base.png');
 			});
 		})
-	});
+*/	});
 };

@@ -12,7 +12,7 @@ const Image = ({map}) => {
 }
 
 const Map = () => {
-	const [map, setMap] = useState(['http://localhost:3001/maps/base.png']);
+	const [map, setMap] = useState(['https://juhakala.com/maps/base.png']);
 	const map_request = () => {
 		const x = 10000;
 		const y = 10000;
