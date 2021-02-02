@@ -7,21 +7,28 @@
 }
 .navItem {
 	align-self: center;
-	padding: 14px;
-	padding-bottom: 16px;
 }
-.navItem:hover {
+.navLink:hover {
 	background: grey;
 }
 .navLink {
 	text-decoration: none;
 	color: white;
+	padding: 14px;
+	padding-bottom: 16px;
 }
 .navFooter {
 	width: 100vw;
 	position: absolute;
 	bottom: 0;
 	flex-direction: column;
+}
+.navFooter .navItem {
+	padding: 14px;
+	padding-bottom: 16px;
+}
+.navFooter .navItem:hover {
+	background: grey;
 }
 .navName {
 	margin: 0;

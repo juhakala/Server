@@ -3,6 +3,11 @@
 	color: white;
 	right: 0;
 	cursor: pointer;
+	padding: 14px;
+	padding-bottom: 16px;
+}
+.navChat:hover {
+	background: grey;
 }
 .chatWindow {
 	position: absolute;

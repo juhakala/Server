@@ -1,0 +1,32 @@
+.todoWrap, .aboutWrap {
+	width: 550px;
+	max-width: 100vw;
+	margin: 100px auto 100px auto;
+	background: #d1c6a5;
+	padding: 25px 0 25px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	white-space: normal;
+	font-family: monospace;
+	font-size: 16px;
+}
+.todoWrap h1, .aboutWrap h1 {
+	text-align: center;
+}
+.aboutWrap p {
+	padding: 0 25px;
+}
+.list li {
+	max-width: 100vw;
+}
+.title {
+	font-size: 20px;
+	font-weight: bold;
+	margin-top: 10px;
+}
+.done {
+	text-decoration: line-through;
+}
+.notDone {
+
+}
