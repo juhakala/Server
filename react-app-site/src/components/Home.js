@@ -44,10 +44,11 @@ const Home = () => {
 			<div className='aboutWrap'>
 				<h1>About this site:</h1>
 				<p>
-				<strong>Backend:</strong> Nodejs and Python.<br />
 				<strong>Frontend:</strong> Javascript and React.<br />
+				<strong>Backend:</strong> Nodejs and Python.<br />
+				<strong>Database:</strong> MySQL.<br />
 				Own server running on Raspberry Pi 4 for learning.<br />
-				Putting location points to black background thus drawing map of helsinki area.<br />
+				<strong>Map:</strong> Placing my location points to black background thus slowly drawing map of helsinki area.<br />
 				Updating as I learn and have time.</p>
 			</div>
 			<div className='todoWrap'>
