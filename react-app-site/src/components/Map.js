@@ -39,8 +39,10 @@ const Image = ({map}) => {
 	)
 */
 	return (
-		<MapInteractionCSS>
-			<img className='image' src={map} alt='baseImg'/>
+		<MapInteractionCSS anchor={{x: '50%', y: '50%'}}>
+			<div className='imgWrap'>
+				<img className='image' src={map} alt='baseImg'/>
+			</div>
 		</MapInteractionCSS>
 	)
 }

@@ -17,26 +17,3 @@
 	min-width: 70vh;
 	background: grey;
 }
-.mapWrap .image {
-
-}
-.first {
-	height: 100%;
-	width: 100%;
-	position: relative;
-	touch-action: none;
-}
-.second {
-	height: 100%;
-	width: 100%;
-	position: relative;
-	overflow: hidden;
-	touch-action: none;
-	cursor: all-scroll;
-	user-select: none;
-}
-.third {
-	display: inline-block;
-
-	transform-origin: 0px 0px;
-}
