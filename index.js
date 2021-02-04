@@ -7,7 +7,7 @@ const express = require('express');
 const mysql = require('mysql');
 const app = express();
 const redir = express();
-app.use(express.json())
+app.use(express.json({ limit: '50mb' }))
 redir.get('/', (req, res) => {
 	if (!req.secure) {
 		res.redirect('https://' + req.headers.host + req.url);
