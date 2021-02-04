@@ -1,24 +1,27 @@
 module.exports = function (app, pool) {
 	app.post('/api/location', (req, res) => {
-
+//		console.log(req.data);
 		pool.getConnection(function(err, connection) {
 			if (err) throw err;
-			req.body.locations.forEach(item => {
-				connection.query(`INSERT INTO coordinates (lon, lat, speed, altitude, timestamp, owner) VALUES (?, ?, ?, ?, ?, ?)`, 
-				[item.geometry.coordinates[1],
-				item.geometry.coordinates[0],
-				item.properties.speed,
-				item.geometry.altitude,
-				item.geometry.timestamp, 
-				1], 
-				function(error, res, fields) {
-					connection.release();
-					if (error) throw error;
+//			console.log(req.body);
+			if (req.body.locations) {
+				req.body.locations.forEach(item => {
+					connection.query(`INSERT INTO coordinates (lon, lat, speed, altitude, date_time, owner) VALUES (?, ?, ?, ?, ?, ?)`, 
+					[item.geometry.coordinates[1] * 10000000,
+					item.geometry.coordinates[0] * 10000000,
+					item.properties.speed,
+					item.geometry.altitude,
+					item.geometry.timestamp, 
+					1], 
+					function(error, res, fields) {
+						connection.release();
+						if (error) throw error;
+					});
 				});
-			});
+			}
 			res.status(200);
 			res.send('OK');
-			console.log('got it');
+//			console.log('got it');
 		});
 	});
 }
