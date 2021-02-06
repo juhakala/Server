@@ -1,6 +1,8 @@
 const url = require('url');
 const fs = require('fs');
 const sharp = require('sharp');
+const async = require("async");
+
 const mw = 10000;
 const mh = 10000;
 const mll = 24.849444;
@@ -10,6 +12,46 @@ const mlb = 60.148333;
 const mlbd = mlb * Math.PI / 180;
 const wmw = ((mw / mld) * 360) / (2 * Math.PI);
 const mosy = (wmw / 2 * Math.log((1 + Math.sin(mlbd)) / (1 - Math.sin(mlbd))));
+
+function createMap(name, arr, LOCKED) {
+	LOCKED.push(name);
+	arr.shift();
+	const picture = sharp({
+		create: {
+			width: 10000,
+			height: 10000,
+			channels: 4,
+			background: { r: 0, g: 0, b: 0, alpha: 1 }
+		}
+	})
+	.composite(arr)
+	.png()
+	.toBuffer()
+	.then(data => {
+		fs.writeFile(`${process.env.MAP_DIR}/${name}`, data, function (err) {
+			if (err) throw(err);
+			LOCKED.slice(LOCKED.indexOf(name), 1);
+		});
+	});
+	return (picture);
+}
+
+function colorMap(name, arr, LOCKED) {
+	LOCKED.push(name);
+	arr.shift();
+	const input = fs.readFileSync(`${process.env.MAP_DIR}/${name}`);
+	const picture = sharp(input)
+	.composite(arr)
+	.png()
+	.toBuffer()
+	.then(data => {
+		fs.writeFile(`${process.env.MAP_DIR}/${name}`, data, function (err) {
+			if (err) throw(err);
+			LOCKED.slice(LOCKED.indexOf(name), 1);
+		});
+	});
+	return (picture);
+}
 
 module.exports = {
 	checkOrig: function (req) {
@@ -31,22 +73,45 @@ module.exports = {
 		const x = (lon - mll) * (mw / mld);
 		lat = lat * Math.PI / 180;
 		const y = mh - ((wmw / 2 * Math.log((1 + Math.sin(lat)) / (1 - Math.sin(lat)))) - mosy);
-		return ([parseInt(x), parseInt(y)]);
+		
+		return ([
+			parseInt(x < 0 ? 10000 + x % 10000: x % 10000),
+			parseInt(y < 0 ? 10000 + y % 10000: y % 10000),
+			Math.floor(x/10000),
+			Math.floor(y/10000)
+		]);
 	},
-	drawToMap: function (arr, LOCKED) {
-		console.log('valmis');
-		LOCKED.push("base.png");
-		const input = fs.readFileSync(`${process.env.MAP_DIR}/base.png`);
-		const base = sharp(input)
-		.composite(arr)
-		.png()
-		.toBuffer()
-		.then(data => {
-			fs.writeFile(`${process.env.MAP_DIR}/base.png`, data, function (err) {
-				if (err) throw(err);
-				LOCKED.slice(LOCKED.indexOf("base.png"), 1);
-				console.log('map ready');
+	drawToMap: function (obj, pool, LOCKED) {
+		async.forEach(obj, function(arr, callback) {
+			pool.getConnection(function(err, connection) {
+				if (err) throw err;
+				connection.query(`SELECT path FROM maps WHERE x = ? AND y = ?`, [arr[0].x, arr[0].y],
+				function(error, res, fields) {
+					connection.release();
+					if (error) throw error;
+					if (!res[0]) {
+						pool.getConnection(function(err, connection) {
+							if (err) throw err;
+							connection.query(`INSERT INTO maps (path, mll, mlr, mlb, x, y) VALUES (
+							?, 0, 0, 0, ?, ?)`, [`${arr[0].x}${arr[0].y}.png`, arr[0].x, arr[0].y],
+							function(error, res, fields) {
+								connection.release();
+								if (error) throw error;
+								createMap(`${arr[0].x}${arr[0].y}.png`, arr, LOCKED).then (data => {
+									callback();
+								});
+							});
+						});
+					} else {
+						colorMap(res[0]['path'], arr, LOCKED).then(data => {
+							callback();
+						});
+					}
+				});
 			});
-		})
+		}, function(err) {
+			if (err) throw(err);
+			console.log('map draws done');
+		});
 	}
 };

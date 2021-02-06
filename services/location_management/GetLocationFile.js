@@ -1,13 +1,15 @@
 const async = require("async");
 const myf = require('./../my_functions');
+const dotenv = require('dotenv');
+dotenv.config();
 
 module.exports = function (app, pool, LOCKED) {
 	app.post('/api/location', (req, res) => {
 //		console.log('content-lenght: ', req.headers['content-length']);
-		const id = parseInt(req.query.id);
-		if (req.body.locations && id === 1) {
+		const id = req.query.id;
+		if (req.body.locations && id === process.env.API_LOCATION) {
 //			console.log('locations-length:', req.body.locations.length);
-			const arr = [];
+			const arr = {};
 			async.forEach(req.body.locations, function(item, callback) {
 				pool.getConnection(function(err, connection) {
 					if (err) throw err;
@@ -17,22 +19,23 @@ module.exports = function (app, pool, LOCKED) {
 						item.properties.speed,
 						item.geometry.altitude,
 						item.geometry.timestamp, 
-						id], 
+						1],
 						function(error, res, fields) {
 							connection.release();
 							if (error) throw error;
 							callback();
 					});
 					var xy = myf.toXY(item.geometry.coordinates[1], item.geometry.coordinates[0]);
-					if (xy[0] > 0 && xy[0] < 10000 &&  xy[1] > 0 && xy[1] < 10000)
-						arr.push({input: {create: {width:1, height:1, channels:4, background: {r:0, g:0, b:255, alpha:0.1}}}, blend:'add', top:xy[1], left:xy[0]});
+					const key = `${xy[2]}${xy[3]}`;
+					if (!(key in arr))
+						arr[key] = [{x: xy[2], y: xy[3]}];
+					arr[key].push({input: {create: {width:1, height:1, channels:4, background: {r:0, g:0, b:255, alpha:0.1}}}, blend:'add', top:xy[1], left:xy[0]});
 				});
 			}, function(err) {
 				if (err) throw(err);
 				res.status(200);
-				res.send('OK');
-				if (arr.length > 0)
-					myf.drawToMap(arr, LOCKED);
+				res.send('OKK');
+				myf.drawToMap(arr, pool, LOCKED);
 			});
 		} else {
 			res.status(400);
