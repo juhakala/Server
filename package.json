@@ -12,6 +12,7 @@
   "author": "jhakala",
   "license": "ISC",
   "dependencies": {
+    "async": "^3.2.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mysql": "^2.18.1",

@@ -1,13 +1,13 @@
 const sharp = require('sharp');
 const fs = require('fs');
-var myf = require('./../my_functions');
+const myf = require('./../my_functions');
 var INPUT = [];
 
 module.exports = function (app) {
 	app.get('/api/newmap', (req, res) => {
 		res.status(403).end('temporaly block for now'); //tmp for now
-
-/*		const picture = sharp({
+/*
+		const picture = sharp({
 			create: {
 				width: 10000,
 				height: 10000,
@@ -24,7 +24,7 @@ module.exports = function (app) {
 				res.send('http://localhost:3001/maps/base.png');
 			});
 		})
-*/	}),
+	*/	}),
 	app.get('/api/createmap/:x/:y', (req, res) => {
 		res.status(403).end('temporaly block for now'); //tmp for now
 

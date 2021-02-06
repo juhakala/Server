@@ -14,6 +14,8 @@ redir.get('/', (req, res) => {
 	}
 });
 
+const LOCKED = [];
+
 var pool  = mysql.createPool({
 	connectionLimit : 10,
 	host     : 'localhost',
@@ -27,7 +29,7 @@ app.use('/maps', express.static(process.env.MAP_DIR));
 require('./services/user_management/Login')(app);
 require('./services/chat_management/Messages')(app, pool);
 require('./services/map_management/Create')(app);
-require('./services/location_management/GetLocationFile')(app, pool);
+require('./services/location_management/GetLocationFile')(app, pool, LOCKED);
 
 const credentials = {
 	key: fs.readFileSync(process.env.LEPV, 'utf8'),

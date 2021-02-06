@@ -1,33 +1,42 @@
-module.exports = function (app, pool) {
+const async = require("async");
+const myf = require('./../my_functions');
+
+module.exports = function (app, pool, LOCKED) {
 	app.post('/api/location', (req, res) => {
-		console.log('content-lenght: ', req.headers['content-length']);
-//		console.log(req.body);
-		if (req.body.locations) {
-			console.log('locations-length:', req.body.locations.length)
-			req.body.locations.forEach(item => {
+//		console.log('content-lenght: ', req.headers['content-length']);
+		const id = parseInt(req.query.id);
+		if (req.body.locations && id === 1) {
+//			console.log('locations-length:', req.body.locations.length);
+			const arr = [];
+			async.forEach(req.body.locations, function(item, callback) {
 				pool.getConnection(function(err, connection) {
 					if (err) throw err;
 					connection.query(`INSERT INTO coordinates (lon, lat, speed, altitude, date_time, owner) VALUES (?, ?, ?, ?, ?, ?)`, 
-						[item.geometry.coordinates[1] * 10000000,
-						item.geometry.coordinates[0] * 10000000,
+						[item.geometry.coordinates[0] * 10000000,
+						item.geometry.coordinates[1] * 10000000,
 						item.properties.speed,
 						item.geometry.altitude,
 						item.geometry.timestamp, 
-						1], 
+						id], 
 						function(error, res, fields) {
 							connection.release();
 							if (error) throw error;
+							callback();
 					});
+					var xy = myf.toXY(item.geometry.coordinates[1], item.geometry.coordinates[0]);
+					if (xy[0] > 0 && xy[0] < 10000 &&  xy[1] > 0 && xy[1] < 10000)
+						arr.push({input: {create: {width:1, height:1, channels:4, background: {r:0, g:0, b:255, alpha:0.1}}}, blend:'add', top:xy[1], left:xy[0]});
 				});
+			}, function(err) {
+				if (err) throw(err);
+				res.status(200);
+				res.send('OK');
+				if (arr.length > 0)
+					myf.drawToMap(arr, LOCKED);
 			});
+		} else {
+			res.status(400);
+			res.send('Error:  bad syntax');
 		}
-		res.status(200);
-		res.send('OK');
-		console.log('got it');
 	});
 }
-//		console.log(req.body.locations[0].geometry.coordinates);
-//		console.log(req.body.locations[0].properties.timestamp);
-//		console.log(req.body.locations[0].properties.altitude);
-//		console.log(req.body.locations[0].properties.speed);
-//		console.log(req.body.locations[0].properties.locations_in_payload);
