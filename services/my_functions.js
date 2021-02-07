@@ -92,8 +92,8 @@ module.exports = {
 					if (!res[0]) {
 						pool.getConnection(function(err, connection) {
 							if (err) throw err;
-							connection.query(`INSERT INTO maps (path, mll, mlr, mlb, x, y) VALUES (
-							?, 0, 0, 0, ?, ?)`, [`${arr[0].x}${arr[0].y}.png`, arr[0].x, arr[0].y],
+							connection.query(`INSERT INTO maps (path, x, y) VALUES (
+							?, ?, ?)`, [`${arr[0].x}${arr[0].y}.png`, arr[0].x, arr[0].y],
 							function(error, res, fields) {
 								connection.release();
 								if (error) throw error;
