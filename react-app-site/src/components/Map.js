@@ -1,84 +1,82 @@
-import axios from 'axios'
+//import axios from 'axios'
 import { useState } from "react"
-import { MapInteractionCSS } from 'react-map-interaction';
 import './../css/map.css';
 
 const Image = ({map}) => {
-	const [values, setValues] = useState({
-		x: -315, y: -4635, scale: 0.068
-	})
-	const styles = { 
-        transform: `translate(${values.x}px, ${values.y}px) scale(${values.scale})` 
-	};
-/*
+	var mouseStart;
+	var imgStart = [0, 0];
+	var imgScale = 1;
 	const EventListenerMode = {capture: true};
 	function mousemoveListener (e) {
 		e.preventDefault();
-		console.log(e.screenX, e.screenY)
+		e.target.style.left = -(mouseStart[0] - e.screenX - imgStart[0]) + "px";
+		e.target.style.top = -(mouseStart[1] - e.screenY - imgStart[1]) + "px";
 	}
 	const mouseDownEvent = (event) => {
-		console.log(event)
+		if (event.target.className !== "image")
+			return ;
+		mouseStart = [event.screenX, event.screenY];
+		if (event.target.style.left)
+			imgStart = [parseInt(event.target.style.left), parseInt(event.target.style.top)]
 		document.addEventListener ('mousemove', mousemoveListener, EventListenerMode);
 		document.addEventListener ('mouseup',   mouseupListener,   EventListenerMode);
-		console.log('in');
 	}
 	function mouseupListener (e) {
 		document.removeEventListener ('mouseup',   mouseupListener,   EventListenerMode);
 		document.removeEventListener ('mousemove', mousemoveListener, EventListenerMode);
-		console.log('out');
 	}
-
-	return (
-		<div className='first' onMouseDown={ mouseDownEvent } >
-			<div className='second'>
-				<div style={styles}>
-					<img className='image' src={map} alt='baseImg'/>
-				</div>
-			</div>
-		</div>
-	)
-*/
-	return (
-		<MapInteractionCSS anchor={{x: '50%', y: '50%'}}>
-			<div className='imgWrap'>
-				<img className='image' src={map} alt='baseImg'/>
-			</div>
-		</MapInteractionCSS>
-	)
-}
-
-const Map = () => {
-	const [map, setMap] = useState(['https://juhakala.com/maps/base.png']);
-	const map_request = () => {
-		const x = 10000;
-		const y = 10000;
-		axios.get(`/api/createmap/${x}/${y}`).then(resp => {
-			console.log(resp);
-			setMap([`${resp.data}?time=${Date.now()}`]);
-		});
+	const handleScroll = (event) => {
+		const elem = document.getElementsByClassName('image')[0];
+//		console.log(elem.style.transform);
+		const tmp = imgScale + 0.01 * event.deltaY;
+		if (tmp > 0.5 && tmp < 150) {
+			imgScale = tmp;
+			elem.style.transform = `scale(${imgScale})`;
+			document.getElementById('info').innerHTML = imgScale;
+		}
 	}
-	const new_request = () => {
-		axios.get(`/api/newmap`).then(resp => {
-			console.log(resp);
-			setMap([`${resp.data}?time=${Date.now()}`]);
-		});
+	const disableScroll = () => {
+		document.body.style.overflow = "hidden";
+	}
+	const enableScroll = () => {
+		document.body.style.overflow = "auto";
 	}
 	const fullScreen = (event) => {
 		const elem = document.getElementsByClassName('mapWrap')[0];
-		if (elem.requestFullscreen) {
-			elem.requestFullscreen();
-		} else if (elem.webkitRequestFullscreen) { /* Safari */
-			elem.webkitRequestFullscreen();
-		}
+		if (!document.fullscreenElement) {
+			if (elem.requestFullscreen)
+				elem.requestFullscreen();
+			else if (elem.webkitRequestFullscreen) /* Safari */
+				elem.webkitRequestFullscreen();
+		} else
+			document.exitFullscreen();
 	}
+
+	return (
+		<>
+			<p id='info' className='info'>1</p>
+			<div onDoubleClick={fullScreen} className='mapWrap'>
+				<div className='imgWrap'
+					onMouseDown={ mouseDownEvent }
+					onWheel={ handleScroll }
+					onMouseEnter={ disableScroll }
+					onMouseLeave={ enableScroll }
+				>
+					<img className='image' src={map} alt='baseImg'/>
+				</div>
+			</div>
+		</>
+	);
+}
+
+const Map = () => {
+	const [map, setMap] = useState(['https://juhakala.com/maps/00.png']);
+
+	
 	return (
 		<div className='mapBody'>
-			<p>map site</p>
-			<div className='button' onClick={map_request}>req</div>
-			<div className='button' onClick={new_request}>base</div>
-			<div onDoubleClick={fullScreen} className='mapWrap'>
-				<Image map={map} />
-			</div>
+			<p className='info'>map site</p>
+			<Image map={map} />
 		</div>
 	)
 }
