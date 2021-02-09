@@ -3,3 +3,7 @@ node_modules
 package-lock.json
 .eslintcache
 .env
+.DS_Store
+tmp.js
+maps
+*.rest

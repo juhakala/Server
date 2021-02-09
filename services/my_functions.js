@@ -2,6 +2,7 @@ const url = require('url');
 const fs = require('fs');
 const sharp = require('sharp');
 const async = require("async");
+const log = require('./log_management/Write')
 
 const mw = 10000;
 const mh = 10000;
@@ -81,7 +82,7 @@ module.exports = {
 			Math.floor(y/10000)
 		]);
 	},
-	drawToMap: function (obj, pool, LOCKED) {
+	drawToMap: function (obj, pool, LOCKED, stamp) {
 		async.forEach(obj, function(arr, callback) {
 			pool.getConnection(function(err, connection) {
 				if (err) throw err;
@@ -98,6 +99,7 @@ module.exports = {
 								connection.release();
 								if (error) throw error;
 								createMap(`${arr[0].x}${arr[0].y}.png`, arr, LOCKED).then (data => {
+									log.write({start: stamp, message: `New map(${arr[0].x},${arr[0].y}}) generated`})
 									callback();
 								});
 							});
@@ -111,7 +113,7 @@ module.exports = {
 			});
 		}, function(err) {
 			if (err) throw(err);
-			console.log('map draws done');
+			log.write({start: stamp, message: "Maps updated"})
 		});
 	}
 };

@@ -38,7 +38,13 @@ const Home = () => {
 		{done: 2, content: 'nothing yet'},
 		{done: 0, content: 'Admin'},
 		{done: 2, content: 'show reported messages'},
-		{done: 2, content: 'delete/accept reported messages'}
+		{done: 2, content: 'delete/accept reported messages'},
+		{done: 0, content: 'Server Loggin'},
+		{done: 2, content: 'stdout'},
+		{done: 2, content: 'stderr'},
+		{done: 2, content: 'log server events to page'},
+		{done: 2, content: 'realtime update'}
+
 	]
 	return (
 		<>

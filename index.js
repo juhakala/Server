@@ -1,6 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 const fs = require('fs');
+const log = require('./services/log_management/Write')
 const http = require('http');
 const https = require('https');
 const express = require('express');
@@ -30,6 +31,7 @@ require('./services/user_management/Login')(app);
 require('./services/chat_management/Messages')(app, pool);
 require('./services/map_management/Create')(app);
 require('./services/location_management/GetLocationFile')(app, pool, LOCKED);
+require('./services/log_management/Send')(app);
 
 const credentials = {
 	key: fs.readFileSync(process.env.LEPV, 'utf8'),

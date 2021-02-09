@@ -5,10 +5,7 @@ import './../css/map.css';
 const Image = ({map}) => {
 	var mouseStart;
 	var imgStart = [0, 0];
-//	var imgScale = 1;
 
-//	var currentMouseY;
-//	var currentMouseX;
 	const EventListenerMode = {capture: true};
 	function mousemoveListener (e) {
 		e.preventDefault();
@@ -35,10 +32,9 @@ const Image = ({map}) => {
 		const elem2 = document.getElementsByClassName('image')[0];
 		const bound2 = elem2.getBoundingClientRect();
 
-		var factor = 0.98;
-		if (event.deltaY < 0) {
+		var factor = 0.97;
+		if (event.deltaY < 0)
 			factor = 1/factor;
-		}
 		if (parseFloat(bound2.width) * factor > 40000 || parseFloat(bound2.width) * factor < 300 )
 			return ;
 		elem2.style.width = (parseFloat(bound2.width) * factor) + 'px';
@@ -53,8 +49,6 @@ const Image = ({map}) => {
 		const dy = (currentMouseY - yy) * (factor - 1);
 		elem2.style.left = (xx - dx) + 'px';
 		elem2.style.top = (yy - dy) + 'px';
-//		console.log(dx);
-
 	}
 
 	const disableScroll = () => {
@@ -87,7 +81,6 @@ const Image = ({map}) => {
 			<div onDoubleClick={fullScreen} className='mapWrap'>
 				<div className='imgWrap'
 					onMouseDown={ mouseDownEvent }
-//					onContextMenu={zo}
 					onWheel={ handleScroll }
 					onMouseEnter={ disableScroll }
 					onMouseLeave={ enableScroll }
@@ -102,7 +95,6 @@ const Image = ({map}) => {
 const Map = () => {
 	const [map, setMap] = useState(['https://juhakala.com/maps/00.png']);
 
-	
 	return (
 		<div className='mapBody'>
 			<p className='info'>map site</p>

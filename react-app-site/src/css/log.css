@@ -1,0 +1,36 @@
+.panel {
+	width: 550px;
+	max-width: calc(100vw - 20px);
+	margin: 100px auto 100px auto;
+	background: black;
+	color: white;
+	padding: 10px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	white-space: normal;
+	font-family: monospace;
+	font-size: 16px;
+}
+.panel .message {
+	margin-bottom: 10px;
+}
+.panel p {
+	padding: 0;
+	margin: 0;
+}
+.panel hr {
+	border-style: none none dashed;
+}
+.panel .timestamp {
+	width: 100%;
+	height: 8px;
+	border-bottom: 1px dashed white;
+	text-align: center;
+	margin-bottom: 10px;
+}
+.panel span {
+	font-size: 16px;
+	font-family: monospace;
+	padding: 0 5px;
+	background: black;
+}

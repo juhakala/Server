@@ -1,14 +1,14 @@
 const async = require("async");
 const myf = require('./../my_functions');
+const log = require('./../log_management/Write')
 const dotenv = require('dotenv');
 dotenv.config();
 
 module.exports = function (app, pool, LOCKED) {
 	app.post('/api/location', (req, res) => {
-//		console.log('content-lenght: ', req.headers['content-length']);
+		const stamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
 		const id = req.query.id;
 		if (req.body.locations && id === process.env.API_LOCATION) {
-//			console.log('locations-length:', req.body.locations.length);
 			const arr = {};
 			async.forEach(req.body.locations, function(item, callback) {
 				pool.getConnection(function(err, connection) {
@@ -35,11 +35,12 @@ module.exports = function (app, pool, LOCKED) {
 				if (err) throw(err);
 				res.status(200);
 				res.send('OKK');
-				myf.drawToMap(arr, pool, LOCKED);
+				myf.drawToMap(arr, pool, LOCKED, stamp);
 			});
 		} else {
 			res.status(400);
 			res.send('Error:  bad syntax');
+			log.write({start: stamp, message: `Unauthorized location update`})
 		}
 	});
 }

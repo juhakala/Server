@@ -5,6 +5,7 @@ import Home from "./components/Home"
 import Map from "./components/Map"
 import Login from "./components/Login"
 import Admin from "./components/Admin"
+import Log from "./components/Log"
 import "./css/App.css"
 
 
@@ -21,6 +22,7 @@ function App() {
 						<Route path="/map" exact component={Map} />
 						<Route path="/login" exact component={Login} />
 						<Route path="/admin" exact component={Admin} />
+						<Route path="/log" exact component={Log} />
 					</Switch>
 				</div>
 				<Footer />
