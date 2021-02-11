@@ -14,11 +14,12 @@ const Message = ({ item }) => {
 	)
 }
 
-const Panel = ({ log }) => {
+const Panel = ({ name, log }) => {
 	if (!log)
 		return null;
 	return (
 		<div className='panel'>
+			<h3>{name}</h3>
 			{log.map(item => <Message key={item.id} item={item}/>)}
 		</div>
 	)
@@ -39,8 +40,8 @@ const Log = () => {
 	}, [])
 	return (
 		<div>
-			<Panel log={log.stdout}/>
-			<Panel log={log.stderr}/>
+			<Panel name='stdout' log={log.stdout}/>
+			<Panel name='stderr' log={log.stderr}/>
 		</div>
 	)
 }

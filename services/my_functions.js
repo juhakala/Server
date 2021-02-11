@@ -82,7 +82,7 @@ module.exports = {
 			Math.floor(y/10000)
 		]);
 	},
-	drawToMap: function (obj, pool, LOCKED, stamp) {
+	drawToMap: function (obj, pool, LOCKED, stamp, len) {
 		async.forEach(obj, function(arr, callback) {
 			pool.getConnection(function(err, connection) {
 				if (err) throw err;
@@ -113,7 +113,7 @@ module.exports = {
 			});
 		}, function(err) {
 			if (err) throw(err);
-			log.write({start: stamp, message: "Maps updated"})
+			log.write({start: stamp, message: `Maps updated: +${len} points`})
 		});
 	}
 };

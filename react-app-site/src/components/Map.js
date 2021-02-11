@@ -32,7 +32,7 @@ const Image = ({map}) => {
 		const elem2 = document.getElementsByClassName('image')[0];
 		const bound2 = elem2.getBoundingClientRect();
 
-		var factor = 0.97;
+		var factor = 0.96;
 		if (event.deltaY < 0)
 			factor = 1/factor;
 		if (parseFloat(bound2.width) * factor > 40000 || parseFloat(bound2.width) * factor < 300 )

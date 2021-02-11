@@ -35,7 +35,7 @@ module.exports = function (app, pool, LOCKED) {
 				if (err) throw(err);
 				res.status(200);
 				res.send('OKK');
-				myf.drawToMap(arr, pool, LOCKED, stamp);
+				myf.drawToMap(arr, pool, LOCKED, stamp, req.body.locations.length);
 			});
 		} else {
 			res.status(400);

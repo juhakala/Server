@@ -63,7 +63,6 @@ const ChatArea = ({ socket }) => {
 	}, [messages]);
 
 	function addToMessages(data) {
-		console.log('recieved');
 		setMessages(messages.concat(data));
 		document.getElementsByClassName('chatArea')[0].scroll({ top: document.getElementsByClassName('chatArea')[0].scrollHeight + 1000, behavior: 'smooth' });
 	}
@@ -110,7 +109,6 @@ const ChatWindow = ({ chatToggle }) => {
 	if (chatToggle === true) {
 		socket.connect();
 		socket.on('connection', () => {
-			console.log(`I'm connected with the back-end`);
 		});
 	} else {
 		socket.removeAllListeners();

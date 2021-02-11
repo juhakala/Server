@@ -7,3 +7,4 @@ package-lock.json
 tmp.js
 maps
 *.rest
+serverLog.json
