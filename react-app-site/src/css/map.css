@@ -19,6 +19,7 @@
 .image {
 	position: relative;
 	width: inherit;
+	filter: brightness(25);
 }
 .info {
 	text-align: center;
@@ -32,4 +33,15 @@
 	padding: 5px;
 	border-radius: 5px;
 	cursor: pointer;
+}
+.mapBody .controlsWrap {
+	width: 100vw;
+	height: 100px;
+}
+.mapBody .controls {
+	position: relative;
+	width: fit-content;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }

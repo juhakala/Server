@@ -1,0 +1,15 @@
+.loginContainer {
+	width: inherit;
+	height: calc(100vh - 96px);
+
+}
+.loginWrap {
+	position: relative;
+	background: #cfbd00;
+	max-width: 100vw;
+	width: 500px;
+	height: 500px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}

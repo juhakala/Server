@@ -69,11 +69,18 @@ const Image = ({map}) => {
 	}
 	const centerToHome = () => {
 		const elem = document.getElementsByClassName('image')[0];
-		elem.style.width = '39999px';
-		elem.style.left = '-19629px';
-		elem.style.top = '-19730px';
+		elem.style.width = '6370px';
+		elem.style.left = '-2831px';
+		elem.style.top = '-2879px';
 	}
 
+	const changeSlider = (event) => {
+//		console.log(event.target.value);
+		const elem = document.getElementsByClassName('image')[0];
+		elem.style.filter = `brightness(${event.target.value})`;
+//		console.log(elem.style.filter.brightness);
+//		console.log(elem.style.filter);
+	}
 	return (
 		<>
 			<p id='info' className='info'>50</p>
@@ -86,6 +93,11 @@ const Image = ({map}) => {
 					onMouseLeave={ enableScroll }
 				>
 					<img className='image' src={map} alt='baseImg'/>
+				</div>
+			</div>
+			<div className='controlsWrap'>
+				<div className='controls'>
+					<input id='slider' onChange={changeSlider} type="range" min="1" max="100" defaultValue="25" />
 				</div>
 			</div>
 		</>
