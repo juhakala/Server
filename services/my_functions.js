@@ -83,37 +83,42 @@ module.exports = {
 		]);
 	},
 	drawToMap: function (obj, pool, LOCKED, stamp, len) {
-		async.forEach(obj, function(arr, callback) {
-			pool.getConnection(function(err, connection) {
-				if (err) throw err;
-				connection.query(`SELECT path FROM maps WHERE x = ? AND y = ?`, [arr[0].x, arr[0].y],
-				function(error, res, fields) {
-					connection.release();
-					if (error) throw error;
-					if (!res[0]) {
-						pool.getConnection(function(err, connection) {
-							if (err) throw err;
-							connection.query(`INSERT INTO maps (path, x, y) VALUES (
-							?, ?, ?)`, [`${arr[0].x}${arr[0].y}.png`, arr[0].x, arr[0].y],
-							function(error, res, fields) {
-								connection.release();
-								if (error) throw error;
-								createMap(`${arr[0].x}${arr[0].y}.png`, arr, LOCKED).then (data => {
-									log.write({start: stamp, message: `New map(${arr[0].x},${arr[0].y}}) generated`})
-									callback();
+		try {
+			async.forEach(obj, function(arr, callback) {
+				pool.getConnection(function(err, connection) {
+					if (err) throw err;
+					connection.query(`SELECT path FROM maps WHERE x = ? AND y = ?`, [arr[0].x, arr[0].y],
+					function(error, res, fields) {
+						connection.release();
+						if (error) throw error;
+						if (!res[0]) {
+							pool.getConnection(function(err, connection) {
+								if (err) throw err;
+								connection.query(`INSERT INTO maps (path, x, y) VALUES (
+								?, ?, ?)`, [`${arr[0].x}${arr[0].y}.png`, arr[0].x, arr[0].y],
+								function(error, res, fields) {
+									connection.release();
+									if (error) throw error;
+									createMap(`${arr[0].x}${arr[0].y}.png`, arr, LOCKED).then (data => {
+										log.write({start: stamp, message: `New map(${arr[0].x},${arr[0].y}}) generated`})
+										callback();
+									});
 								});
 							});
-						});
-					} else {
-						colorMap(res[0]['path'], arr, LOCKED).then(data => {
-							callback();
-						});
-					}
+						} else {
+							colorMap(res[0]['path'], arr, LOCKED).then(data => {
+								callback();
+							});
+						}
+					});
 				});
+			}, function(err) {
+				if (err) throw(err);
+				log.write({start: stamp, message: `Maps updated: +${len} points`})
 			});
-		}, function(err) {
-			if (err) throw(err);
-			log.write({start: stamp, message: `Maps updated: +${len} points`})
-		});
+		} catch(err) {
+			console.log('drawToMap: ', err);
+
+		}
 	}
 };

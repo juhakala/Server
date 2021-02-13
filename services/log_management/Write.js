@@ -23,8 +23,12 @@ module.exports = {
 			message: message.message
 		}
 		data.stdout.push(stdObj);
-		fs.writeFile("serverLog.json", JSON.stringify(data, null, 4), 'utf8', function (err) {
-			if (err) throw err;
-		});
+		try {
+			fs.writeFile("serverLog.json", JSON.stringify(data, null, 4), 'utf8', function (err) {
+				if (err) throw err;
+			});
+		} catch (err) {
+			console.log('write log: ', err);
+		}
 	}
 }
