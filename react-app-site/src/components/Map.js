@@ -109,7 +109,6 @@ const Map = () => {
 
 	return (
 		<div className='mapBody'>
-			<p className='info'>map site</p>
 			<Image map={map} />
 		</div>
 	)
