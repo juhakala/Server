@@ -28,6 +28,7 @@ module.exports = function (app, pool, LOCKED) {
 						});
 						var xy = myf.toXY(item.geometry.coordinates[1], item.geometry.coordinates[0]);
 						const key = `${xy[2]}${xy[3]}`;
+//						console.log(xy[0], xy[1], xy[2], xy[3]);
 						if (!(key in arr))
 							arr[key] = [{x: xy[2], y: xy[3]}];
 						arr[key].push({input: {create: {width:1, height:1, channels:4, background: {r:0, g:0, b:255, alpha:0.1}}}, blend:'add', top:xy[1], left:xy[0]});

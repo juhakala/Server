@@ -8,7 +8,7 @@ const Login = () => {
 	return (
 		<div className='loginContainer'>
 			<div className='loginWrap'>
-
+				<p>in next major update</p>
 			</div>
 		</div>
 	)

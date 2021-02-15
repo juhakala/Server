@@ -1,7 +1,7 @@
 const Admin = () => {
 	return (
 		<>
-			<h2>Admin page. go away</h2>
+			<h2>Admin page. placeholder, after Login</h2>
 		</>
 	)
 }
