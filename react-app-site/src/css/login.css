@@ -34,11 +34,21 @@
 	width: 200px;
 	box-sizing: border-box
 }
-.loginFormWrap .inputHover:hover {
-	border-color: white;
+.loginFormWrap input:hover {
+	/*border-color: white;*/
+	background-size: 200% 200%;
+	background: 
+    	linear-gradient(#2f3e59, #2f3e59) padding-box,
+    	linear-gradient(to right, #9c20aa, #fb3570) border-box;
+	border: 1px solid transparent;
 }
+
 .loginFormWrap input:focus {
 	outline: none;
 	border-radius: 999px;
-	border-color: white;
+	background-size: 200% 200%;
+	background: 
+    	linear-gradient(#2f3e59, #2f3e59) padding-box,
+    	linear-gradient(to right, #9c20aa, #fb3570) border-box;
+	border: 1px solid transparent;
   }

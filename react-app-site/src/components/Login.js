@@ -23,7 +23,10 @@ const Form = () => {
 //				if (resp)
 //				setToken(resp.data);
 //				console.log(resp);
-				console.log(resp.data.token);
+				console.log('data', resp.data);
+			})
+			.catch(err => {
+				console.log('err', err);
 			})
 		console.log('data', data);
 	}
