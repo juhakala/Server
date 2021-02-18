@@ -20,15 +20,12 @@ const Form = () => {
 		axios
 			.post('/api/login', data)
 			.then(resp => {
-//				if (resp)
-//				setToken(resp.data);
-//				console.log(resp);
-				console.log('data', resp.data);
+				window.location.reload();
 			})
 			.catch(err => {
 				console.log('err', err);
 			})
-		console.log('data', data);
+//		console.log('data', data);
 	}
 	return (
 		<div className='loginFormWrap'>
@@ -43,10 +40,20 @@ const Form = () => {
 	)
 }
 
-const Login = () => {
+const Login = ({ status }) => {
 //	axios.get('/api/login').then(resp => {
 //		console.log(resp.data);
 //	})
+//	console.log('hih', status.data.email)
+	if (status) {
+		return (
+			<div className='loginContainer'>
+				<div className='loginWrap'>
+					<div>{status.status}</div>
+				</div>
+			</div>
+		)
+	}
 	return (
 		<div className='loginContainer'>
 			<div className='loginWrap'>

@@ -11,18 +11,14 @@ function token(payload, secret, expire) {
 	})
 }
 
-const tokens = async (res, qres, users) => {
-	const payload = { username: qres[0].name, email: qres[0].email }
+const tokens = async (res, payload) => {
 	const accessToken = await token(payload, process.env.ACCESS_TOKEN_SECRET, parseInt(process.env.ACCESS_TOKEN_LIFE));
-	const refreshToken = await token(payload, process.env.REFRESH_TOKEN_SECRET, parseInt(process.env.REFRESH_TOKEN_LIFE));
-	users[qres[0].name] = { refreshToken: refreshToken };
-	const age = parseInt(process.env.REFRESH_TOKEN_LIFE);
-	res.cookie("jwt", accessToken, {secure: process.env.MODE === 'dev' ? false : true, maxAge: age * 100})
+	const age = parseInt(process.env.ACCESS_TOKEN_LIFE);
+	res.cookie("jwt", accessToken, {secure: process.env.MODE === 'dev' ? false : true, httpOnly: true, maxAge: age * 1000})
 	res.send()
-//	console.log('users', users);
 }
 
-module.exports = function (app, users, pool) {
+module.exports = function (app, pool) {
 	app.post('/api/login', (req, res) => {
 		if (myf.checkOrig(req) === true) {
 			try {
@@ -36,9 +32,9 @@ module.exports = function (app, users, pool) {
 							res.status(401).end();
 						} else {
 							bcrypt.compare(req.body.passwd, qres[0].salt, function(err, result) {
-								console.log(result)
+//								console.log(result)
 								if (result === true) {
-									tokens(res, qres, users);
+									tokens(res, { username: qres[0].name, email: qres[0].email });
 								} else {
 									res.status(401).end();
 								}
@@ -52,7 +48,60 @@ module.exports = function (app, users, pool) {
 		} else {
 			res.status(403).end();
 		}
-	});
+	}),
+	app.get('/api/verify', (req, res) => {
+//		console.log('in verify');
+		const token = req.cookies.jwt;
+		if (!token)
+			return res.status(401).end();
+			var payload;
+		try {
+			payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+		} catch (e) {
+			if (e instanceof jwt.JsonWebTokenError) { // WT is unauthorized
+//				console.log('time is up?!');
+				return res.status(401).end()
+			}
+			return res.status(400).end()
+		}
+		try {
+			pool.getConnection(function(err, connection) {
+				if (err) throw err;
+				connection.query(`SELECT * FROM users WHERE name=?`, [payload.username],
+					function(error, qres, fields) {
+						connection.release();
+						res.send(JSON.stringify(qres[0]));
+//						console.log('verifyed!');
+				});
+			});
+		} catch (err) {
+			console.log(err)
+		}
+	}),
+	app.post('/api/logout', (req, res) => {
+		const token = req.cookies.jwt;
+		if (!token)
+			return res.status(401).end();
+		res.cookie("jwt", '', { httpOnly: true });
+		res.send();
+		
+	}),
+	app.post('/api/refresh', (rew, res) => {
+		const token = req.cookies.jwt;
+		if (!token)
+			return res.status(401).end();
+		var payload;
+		try {
+			payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+		} catch (e) {
+			if (e instanceof jwt.JsonWebTokenError) { // WT is unauthorized
+//				console.log('time is up?!');
+				return res.status(401).end()
+			}
+			return res.status(400).end()
+		}
+		tokens(res, { username: payload.username, email: payload.email });
+	})
 }
 /*
 const saltRounds = 10;

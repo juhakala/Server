@@ -8,23 +8,27 @@ import Admin from "./components/Admin"
 import Log from "./components/Log"
 import Tasks from "./components/Tasks"
 import "./css/App.css"
+import { useEffect, useState } from "react"
+import axios from "axios"
 
 
 function App() {
-//console.log(process.env.REACT_APP_NOT_SECRET_CODE)
-//console.log(process.env.NODE_ENV)
+	const [status, setStatus] = useState(0);
+	useEffect(() => {
+		axios.get('/api/verify').then(resp => { setStatus(resp); }).catch(err => { setStatus(err.status); });
+	}, [])
 	return (
 		<HashRouter>
 			<div>
-				<Header />
+				<Header status={status}/>
 				<div className="mainBody">
 					<Switch>
-						<Route path="/" exact component={Home} />
-						<Route path="/map" exact component={Map} />
-						<Route path="/login" exact component={Login} />
-						<Route path="/admin" exact component={Admin} />
-						<Route path="/log" exact component={Log} />
-						<Route path="/tasks" exact component={Tasks} />
+						<Route path="/" exact component={()=> <Home />} />
+						<Route path="/map" exact component={()=> <Map />} />
+						<Route path="/login" exact component={()=> <Login status={status}/>} />
+						<Route path="/admin" exact component={()=> <Admin status={status}/>} />
+						<Route path="/log" exact component={()=> <Log />} />
+						<Route path="/tasks" exact component={()=> <Tasks />} />
 					</Switch>
 				</div>
 				<Footer />

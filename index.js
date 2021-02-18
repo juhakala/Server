@@ -20,7 +20,6 @@ redir.get('/', (req, res) => {
 });
 
 const LOCKED = [];
-const users = [];
 
 var pool  = mysql.createPool({
 	connectionLimit : 10,
@@ -30,26 +29,9 @@ var pool  = mysql.createPool({
 	database : 'juhakala'
 });
 
-app.get('/api/admin', (req, res) => {
-	const token = req.cookies.jwt;
-	if (!token)
-		return res.status(401).end()
-	var payload;
-	try {
-		payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
-	} catch (e) {
-		if (e instanceof jwt.JsonWebTokenError) { // WT is unauthorized
-			return res.status(401).end()
-		}
-		return res.status(400).end()
-	}
-	res.send(`Welcome ${payload.username}!`)
-	console.log(`Welcome ${payload.username}!`);
-});
-
 app.use('/', express.static('./build'));
 app.use('/maps', express.static(process.env.MAP_DIR));
-require('./services/user_management/Login')(app, users, pool);
+require('./services/user_management/Login')(app, pool);
 require('./services/chat_management/Messages')(app, pool);
 //require('./services/map_management/Create')(app);
 require('./services/location_management/GetLocationFile')(app, pool, LOCKED);
