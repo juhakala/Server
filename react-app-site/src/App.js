@@ -17,9 +17,12 @@ function App() {
 	useEffect(() => {
 		axios.get('/api/verify').then(resp => { setStatus(resp); }).catch(err => { setStatus(err.status); });
 	}, [])
+	const getXY = (e) => {
+		console.log('XY', e.screenX, e.screenY, e.clientX, e.clientY);
+	}
 	return (
 		<HashRouter>
-			<div>
+			<div onContextMenu={getXY}>
 				<Header status={status}/>
 				<div className="mainBody">
 					<Switch>

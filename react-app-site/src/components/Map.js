@@ -1,8 +1,34 @@
 //import axios from 'axios'
-import { useState } from "react"
+import axios from "axios";
+import { useEffect, useState } from "react"
 import './../css/map.css';
 
-const Image = ({map}) => {
+const MenuWrap = ({ map, setMap }) => {
+	const changeToMap = (id) => {
+	/*
+		console.log(id)
+		console.log(map[0])
+		console.log(map[id])
+		console.log(map);
+	*/
+		if (id === 0)
+			return ;
+		const tmp1 = map[0];
+		const tmp2 = map[id];
+		const newMap = [...map];
+		newMap[0] = tmp2;
+		newMap[id] = tmp1;
+		setMap(newMap);
+	}
+	return (
+		<>
+			{map.map((item, index) => <p key={item.id} onClick={() => changeToMap(index)}>{item.path}</p>)}
+		</>
+	)
+}
+
+const Image = ({map, setMap}) => {
+	const [selectedMap, setSelectedMap] = useState(0);
 	var mouseStart;
 	var imgStart = [0, 0];
 
@@ -58,6 +84,7 @@ const Image = ({map}) => {
 		document.body.style.overflow = "auto";
 	}
 	const fullScreen = (event) => {
+		event.preventDefault();
 		const elem = document.getElementsByClassName('mapWrap')[0];
 		if (!document.fullscreenElement) {
 			if (elem.requestFullscreen)
@@ -81,18 +108,28 @@ const Image = ({map}) => {
 //		console.log(elem.style.filter.brightness);
 //		console.log(elem.style.filter);
 	}
+
+	const mapSelector = (event) => {
+		event.preventDefault();
+		console.log('mappi', map);
+		const elem = document.getElementsByClassName('menuWrap')[0];
+		const bound = document.getElementsByClassName('mapBody')[0].getBoundingClientRect();
+		elem.style.display = 'block';
+		elem.style.left = event.screenX + 'px';
+		elem.style.top = event.clientY - bound.y + 'px';
+	}
 	return (
 		<>
-			<p id='info' className='info'>50</p>
 			<div className="center" onClick={ centerToHome }>center</div>
 			<div onDoubleClick={fullScreen} className='mapWrap'>
 				<div className='imgWrap'
+					onContextMenu={ mapSelector }
 					onMouseDown={ mouseDownEvent }
 					onWheel={ handleScroll }
 					onMouseEnter={ disableScroll }
 					onMouseLeave={ enableScroll }
 				>
-					<img className='image' src={map} alt='baseImg'/>
+					<img className='image' src={`https://juhakala.com/maps/${map[selectedMap].path}`} alt='baseImg'/>
 				</div>
 			</div>
 			<div className='controlsWrap'>
@@ -100,16 +137,35 @@ const Image = ({map}) => {
 					<input id='slider' onChange={changeSlider} type="range" min="1" max="100" defaultValue="25" />
 				</div>
 			</div>
+			<div className='menuWrap'>
+				<MenuWrap map={map} setMap={setMap} />
+			</div>
 		</>
 	);
 }
 
 const Map = () => {
-	const [map, setMap] = useState(['https://juhakala.com/maps/00.png']);
-
+	const [map, setMap] = useState(null);//useState([{id:1,path:'00.png',x:0,y:0}]);
+useEffect(() => {
+		axios.get('/api/maps')
+		.then(data => {
+			console.log(data.data);
+			setMap(data.data);
+		})
+		.catch(err => {
+			console.log(err);
+		})
+	}, [])
+	const hideMenu = (event) => {
+		const elem = document.getElementsByClassName('menuWrap')[0];
+		if (elem && elem.style.display === 'block' && !elem.contains(event.target))
+			elem.style.display = 'none';
+	}
+	if (map === null)
+		return null;
 	return (
-		<div className='mapBody'>
-			<Image map={map} />
+		<div className='mapBody' onClick={hideMenu}>
+			<Image map={map} setMap={setMap} />
 		</div>
 	)
 }

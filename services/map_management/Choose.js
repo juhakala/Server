@@ -1,30 +1,23 @@
-const sharp = require('sharp');
 const fs = require('fs');
 const myf = require('./../my_functions');
-var INPUT = [];
 
-module.exports = function (app) {
-	app.get('/api/newmap', (req, res) => {
-		res.status(403).end('temporaly block for now'); //tmp for now
-/*
-		const picture = sharp({
-			create: {
-				width: 10000,
-				height: 10000,
-				channels: 4,
-				background: { r: 0, g: 0, b: 0, alpha: 1 }
+module.exports = function (app, pool) {
+	app.get('/api/maps', (req, res) => {
+		if (myf.checkOrig(req) === true) {
+			try {
+				pool.getConnection(function(err, connection) {
+					if (err) throw err;
+					connection.query(`SELECT * FROM maps`, function(error, qres, fields) {
+//						console.log(qres);
+						res.status(200);
+						res.send(JSON.stringify(qres));
+					});
+				});
+			} catch(err) {
+				console.log(err);
 			}
-		})
-		.png()
-		.toBuffer()
-		.then(data => {
-			fs.writeFile(`${process.env.MAP_DIR}/base.png`, data, function (err) {
-				if (err) throw(err);
-				res.status(200);
-				res.send('http://localhost:3001/maps/base.png');
-			});
-		})
-	*/	}),
+		}
+	}),
 	app.get('/api/createmap/:x/:y', (req, res) => {
 		res.status(403).end('temporaly block for now'); //tmp for now
 

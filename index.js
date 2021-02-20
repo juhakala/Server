@@ -33,7 +33,7 @@ app.use('/', express.static('./build'));
 app.use('/maps', express.static(process.env.MAP_DIR));
 require('./services/user_management/Login')(app, pool);
 require('./services/chat_management/Messages')(app, pool);
-//require('./services/map_management/Create')(app);
+require('./services/map_management/Choose')(app, pool);
 require('./services/location_management/GetLocationFile')(app, pool, LOCKED);
 require('./services/log_management/Send')(app);
 
