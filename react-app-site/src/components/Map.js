@@ -65,8 +65,8 @@ const Image = ({map, setMap}) => {
 			return ;
 		elem2.style.width = (parseFloat(bound2.width) * factor) + 'px';
 
-		const currentMouseY = event.screenY - bound1.y;
-		const currentMouseX = event.screenX - bound1.x;
+		const currentMouseY = event.clientY - bound1.y;
+		const currentMouseX = event.clientX - bound1.x;
 
 		const xx = bound2.x - bound1.x;
 		const yy = bound2.y - bound1.y;
@@ -115,7 +115,7 @@ const Image = ({map, setMap}) => {
 		const elem = document.getElementsByClassName('menuWrap')[0];
 		const bound = document.getElementsByClassName('mapBody')[0].getBoundingClientRect();
 		elem.style.display = 'block';
-		elem.style.left = event.screenX + 'px';
+		elem.style.left = event.clientX + 'px';
 		elem.style.top = event.clientY - bound.y + 'px';
 	}
 	return (

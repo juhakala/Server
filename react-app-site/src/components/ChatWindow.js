@@ -108,7 +108,8 @@ const ChatWindow = ({ chatToggle }) => {
 	useEffect(() => {
 	if (chatToggle === true) {
 		socket.connect();
-		socket.on('connection', () => {
+		socket.on('connection', (resp) => {
+			console.log('connected with :', resp.numClients);
 		});
 	} else {
 		socket.removeAllListeners();

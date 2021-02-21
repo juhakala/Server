@@ -1,9 +1,12 @@
 var myf = require('./../my_functions');
-
+var numClients = 0;
 module.exports = function (io, pool) {
-	io.on('connection', (socket) => { 
-		socket.emit('connection', null);
-		socket.on('disconnect', (reason) => {});
+	io.on('connection', (socket) => {
+		numClients++;
+		socket.emit('connection', {numClients: numClients});
+		socket.on('disconnect', (reason) => {
+			numClients--;
+		});
 		socket.on("chat", (arg) => {
 			arg = arg.slice(0, 255);
 			try {
