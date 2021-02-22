@@ -1,5 +1,7 @@
 .mapBody {
 	overflow: hidden;
+	position: relative;
+	max-height: inherit;
 }
 .mapWrap {
 	margin: auto;
@@ -47,14 +49,35 @@
 }
 .menuWrap {
 	max-width: 100vw;
-	width: fit-content;
-	height: fit-content;
-	max-height: calc(100vh - 96px);
+	width: 300px;
+	height: 300px;
 	position: absolute;
 	display: none;
 	top: 0;
 	left: 0;
-	background: white;
+	background: brown;
+	cursor: default;
+	overflow: auto;
+}
+.menuWrap .gridContainer {
+	display: grid;
+	column-gap: 2px;
+	row-gap: 2px;
+	grid-auto-flow: row;
+	background: #3f3f42;
+	overflow: auto;
+	padding: 20px;
+	width: fit-content;
+}
+.menuWrap .gridContainer .gridItem {
 	cursor: pointer;
-	padding: 10px;
+	opacity: 0.7;
+}
+.menuWrap .gridContainer .gridItem:hover {
+	transform: scale(1.2);
+	opacity: 1.0;
+	transition: 0.5s;
+}
+.menuWrap .gridContainer .empty {
+	background: #9b9b9e;
 }

@@ -18,7 +18,7 @@ function App() {
 		axios.get('/api/verify').then(resp => { setStatus(resp); }).catch(err => { setStatus(err.status); });
 	}, [])
 	const getXY = (e) => {
-		console.log('XY', e.screenX, e.screenY, e.clientX, e.clientY);
+		//console.log('XY', e.screenX, e.screenY, e.clientX, e.clientY);
 	}
 	return (
 		<HashRouter>

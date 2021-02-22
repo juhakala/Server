@@ -3,14 +3,12 @@ import axios from "axios";
 import { useEffect, useState } from "react"
 import './../css/map.css';
 
-const MenuWrap = ({ map, setMap }) => {
+const MenuWrap = ({ map, setMap, dimensions }) => {
+	const gridStyle = {
+		gridTemplateColumns: `repeat(${Number.isInteger(dimensions.columns) ? dimensions.columns : 0}, 20px)`,
+		gridTemplateRows: `repeat(${Number.isInteger(dimensions.rows) ? dimensions.rows : 0}, 20px)`
+	}
 	const changeToMap = (id) => {
-	/*
-		console.log(id)
-		console.log(map[0])
-		console.log(map[id])
-		console.log(map);
-	*/
 		if (id === 0)
 			return ;
 		const tmp1 = map[0];
@@ -20,14 +18,34 @@ const MenuWrap = ({ map, setMap }) => {
 		newMap[id] = tmp1;
 		setMap(newMap);
 	}
+	const numEmpty = dimensions.rows * dimensions.columns - map.length;
+	var empties = [];
+	for (var i = 0; i < numEmpty; i++) {
+		empties.push(<div key={-i} className='empty' />);
+	}
 	return (
-		<>
-			{map.map((item, index) => <p key={item.id} onClick={() => changeToMap(index)}>{item.path}</p>)}
-		</>
+		<div className='menuWrap'>
+			{map.map((item, index) => <p style={{ cursor:'pointer', width:'fit-content' }}key={item.id} onClick={() => changeToMap(index)}>{item.path}</p>)}
+			<div style={gridStyle} className='gridContainer'>
+				{empties}
+				{map.map((item, index) => 
+				<div
+					onClick={() => changeToMap(index)}
+					style={{
+						gridColumn: dimensions.columns + item.x,
+						gridRow: dimensions.rows + item.y,
+						background: index !== 0 ? 'coral' : 'blue',
+					}}
+					className='gridItem'
+					key={item.id}
+				></div>
+				)}
+			</div>
+		</div>
 	)
 }
 
-const Image = ({map, setMap}) => {
+const Image = ({map, setMap, dimensions}) => {
 	const [selectedMap, setSelectedMap] = useState(0);
 	var mouseStart;
 	var imgStart = [0, 0];
@@ -78,10 +96,10 @@ const Image = ({map, setMap}) => {
 	}
 
 	const disableScroll = () => {
-		document.body.style.overflow = "hidden";
+		document.getElementsByClassName('mapBody')[0].style.overflow = "hidden";
 	}
 	const enableScroll = () => {
-		document.body.style.overflow = "auto";
+		document.getElementsByClassName('mapBody')[0].style.overflow = "auto";
 	}
 	const fullScreen = (event) => {
 		event.preventDefault();
@@ -102,16 +120,12 @@ const Image = ({map, setMap}) => {
 	}
 
 	const changeSlider = (event) => {
-//		console.log(event.target.value);
 		const elem = document.getElementsByClassName('image')[0];
 		elem.style.filter = `brightness(${event.target.value})`;
-//		console.log(elem.style.filter.brightness);
-//		console.log(elem.style.filter);
 	}
 
 	const mapSelector = (event) => {
 		event.preventDefault();
-		console.log('mappi', map);
 		const elem = document.getElementsByClassName('menuWrap')[0];
 		const bound = document.getElementsByClassName('mapBody')[0].getBoundingClientRect();
 		elem.style.display = 'block';
@@ -137,20 +151,29 @@ const Image = ({map, setMap}) => {
 					<input id='slider' onChange={changeSlider} type="range" min="1" max="100" defaultValue="25" />
 				</div>
 			</div>
-			<div className='menuWrap'>
-				<MenuWrap map={map} setMap={setMap} />
-			</div>
+			<MenuWrap map={map} setMap={setMap} dimensions={dimensions} />
 		</>
 	);
 }
 
 const Map = () => {
-	const [map, setMap] = useState(null);//useState([{id:1,path:'00.png',x:0,y:0}]);
-useEffect(() => {
+	const [map, setMap] = useState(null);
+	const [dimensions, setDimensions] = useState({ xMin:0, xMax:0, yMin:0, yMax:0, columns:0, rows:0 });
+	useEffect(() => {
 		axios.get('/api/maps')
 		.then(data => {
-			console.log(data.data);
 			setMap(data.data);
+			const x = data.data.map(item => { return item.x })
+			const y = data.data.map(item => { return item.y })
+			const newDims = {
+				xMin: Math.min(...x),
+				xMax: Math.max(...x),
+				yMin: Math.min(...y),
+				yMax: Math.max(...y)
+			};
+			newDims.columns = newDims.xMax - newDims.xMin;
+			newDims.rows = newDims.yMax - newDims.yMin;
+			setDimensions(newDims);
 		})
 		.catch(err => {
 			console.log(err);
@@ -165,7 +188,13 @@ useEffect(() => {
 		return null;
 	return (
 		<div className='mapBody' onClick={hideMenu}>
-			<Image map={map} setMap={setMap} />
+			<p className='info'>
+				<strong>map controls</strong><br/>
+				zoom with mouse or pad<br/>
+				move with mouse down<br/>
+				map selection context menu (right click)<br/>
+			</p>
+			<Image map={map} setMap={setMap} dimensions={dimensions} />
 		</div>
 	)
 }
