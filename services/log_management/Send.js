@@ -8,7 +8,11 @@ module.exports = function (app, LOCKED) {
 //		stamp.start = new Date().toISOString().slice(0, 19).replace('T', ' ');
 //		stamp.message = "new stdout try on message";
 		if (myf.checkOrig(req) === true) {
-			const resp = JSON.parse(fs.readFileSync('serverLog.json'));
+			try {
+				const resp = JSON.parse(fs.readFileSync('serverLog.json'));
+			} catch(err) {
+				console.log('Send log:', err);
+			}
 			res.status(200);
 			res.send(resp);
 		} else {

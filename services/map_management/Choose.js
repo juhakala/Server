@@ -1,5 +1,5 @@
 const fs = require('fs');
-const myf = require('./../my_functions');
+const myf = require('../my_functions');
 
 module.exports = function (app, pool) {
 	app.get('/api/maps', (req, res) => {

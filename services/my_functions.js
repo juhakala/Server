@@ -86,6 +86,7 @@ module.exports = {
 		try {
 			async.forEach(obj, function(arr, callback) {
 				pool.getConnection(function(err, connection) {
+					const values = { x:arr[0].x, y:arr[0].y};
 					if (err) throw err;
 					connection.query(`SELECT path FROM maps WHERE x = ? AND y = ?`, [arr[0].x, arr[0].y],
 					function(error, res, fields) {
@@ -95,12 +96,12 @@ module.exports = {
 							pool.getConnection(function(err, connection) {
 								if (err) throw err;
 								connection.query(`INSERT INTO maps (path, x, y) VALUES (
-								?, ?, ?)`, [`${arr[0].x}${arr[0].y}.png`, arr[0].x, arr[0].y],
+								?, ?, ?)`, [`${values.x},${values.y}.png`, values.x, values.y],
 								function(error, res, fields) {
 									connection.release();
 									if (error) throw error;
-									createMap(`${arr[0].x}${arr[0].y}.png`, arr, LOCKED).then (data => {
-										log.write({start: stamp, message: `New map(${arr[0].x},${arr[0].y}}) generated`})
+									createMap(`${values.x},${values.y}.png`, arr, LOCKED).then (data => {
+										log.write({ start: stamp, message: `New map(${values.x},${values.y}}) generated` });
 										callback();
 									});
 								});

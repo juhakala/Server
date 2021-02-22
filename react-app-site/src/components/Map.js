@@ -23,11 +23,10 @@ const MenuWrap = ({ map, setMap, dimensions }) => {
 	for (var i = 0; i < numEmpty; i++) {
 		empties.push(<div key={-i} className='empty' />);
 	}
-	map.forEach(item => {
-		console.log(dimensions.columns + item.x, dimensions.columns, item.x)
-		console.log(dimensions.rows + item.y, dimensions.rows, item.y);
-		
-	});
+//	map.forEach(item => {
+//		console.log(dimensions.columns + item.x, dimensions.columns, item.x)
+//		console.log(dimensions.rows + item.y, dimensions.rows, item.y);		
+//	});
 	return (
 		<div className='menuWrap'>
 			{map.map((item, index) => <p style={{ cursor:'pointer', width:'fit-content' }}key={item.id} onClick={() => changeToMap(index)}>{item.path}</p>)}
@@ -180,7 +179,7 @@ const Map = () => {
 			};
 			newDims.columns = newDims.xMax - newDims.xMin + 1;
 			newDims.rows = newDims.yMax - newDims.yMin + 1;
-			console.log('d',newDims)
+//			console.log('d',newDims)
 			setDimensions(newDims);
 		})
 		.catch(err => {
