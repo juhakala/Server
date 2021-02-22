@@ -23,6 +23,11 @@ const MenuWrap = ({ map, setMap, dimensions }) => {
 	for (var i = 0; i < numEmpty; i++) {
 		empties.push(<div key={-i} className='empty' />);
 	}
+	map.forEach(item => {
+		console.log(dimensions.columns + item.x, dimensions.columns, item.x)
+		console.log(dimensions.rows + item.y, dimensions.rows, item.y);
+		
+	});
 	return (
 		<div className='menuWrap'>
 			{map.map((item, index) => <p style={{ cursor:'pointer', width:'fit-content' }}key={item.id} onClick={() => changeToMap(index)}>{item.path}</p>)}
@@ -53,6 +58,8 @@ const Image = ({map, setMap, dimensions}) => {
 	const EventListenerMode = {capture: true};
 	function mousemoveListener (e) {
 		e.preventDefault();
+		if (e.target !== document.getElementsByClassName('image')[0])
+			return ;
 		e.target.style.left = -(mouseStart[0] - e.screenX - imgStart[0]) + "px";
 		e.target.style.top = -(mouseStart[1] - e.screenY - imgStart[1]) + "px";
 	}
@@ -99,7 +106,7 @@ const Image = ({map, setMap, dimensions}) => {
 		document.getElementsByClassName('mapBody')[0].style.overflow = "hidden";
 	}
 	const enableScroll = () => {
-		document.getElementsByClassName('mapBody')[0].style.overflow = "auto";
+		document.getElementsByClassName('mapBody')[0].style.overflow = "overlay";
 	}
 	const fullScreen = (event) => {
 		event.preventDefault();
@@ -171,8 +178,9 @@ const Map = () => {
 				yMin: Math.min(...y),
 				yMax: Math.max(...y)
 			};
-			newDims.columns = newDims.xMax - newDims.xMin;
-			newDims.rows = newDims.yMax - newDims.yMin;
+			newDims.columns = newDims.xMax - newDims.xMin + 1;
+			newDims.rows = newDims.yMax - newDims.yMin + 1;
+			console.log('d',newDims)
 			setDimensions(newDims);
 		})
 		.catch(err => {

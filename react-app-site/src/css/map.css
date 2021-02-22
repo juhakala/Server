@@ -1,5 +1,5 @@
 .mapBody {
-	overflow: hidden;
+	overflow: overlay;
 	position: relative;
 	max-height: inherit;
 }
