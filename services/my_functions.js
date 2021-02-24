@@ -15,7 +15,6 @@ const wmw = ((mw / mld) * 360) / (2 * Math.PI);
 const mosy = (wmw / 2 * Math.log((1 + Math.sin(mlbd)) / (1 - Math.sin(mlbd))));
 
 function createMap(name, arr, LOCKED) {
-	LOCKED.push(name);
 	arr.shift();
 	const picture = sharp({
 		create: {
@@ -29,27 +28,37 @@ function createMap(name, arr, LOCKED) {
 	.png()
 	.toBuffer()
 	.then(data => {
-		fs.writeFile(`${process.env.MAP_DIR}/${name}`, data, function (err) {
-			if (err) throw(err);
-			LOCKED.slice(LOCKED.indexOf(name), 1);
-		});
+		fs.writeFileSync(`${process.env.MAP_DIR}/${name}`, data);
 	});
 	return (picture);
 }
 
 function colorMap(name, arr, LOCKED) {
-	LOCKED.push(name);
 	arr.shift();
-	const input = fs.readFileSync(`${process.env.MAP_DIR}/${name}`);
+	var input = null;
+	try {
+		input = fs.readFileSync(`${process.env.MAP_DIR}/${name}`);
+	} catch(err) {
+		if (err.code === 'ENOENT') {
+			console.log(`colorMap, file not found (${name}): `, err);
+			input = {
+				create: {
+					width: 10000,
+					height: 10000,
+					channels: 4,
+					background: { r: 0, g: 0, b: 0, alpha: 1 }
+				}
+			}
+		} else {
+			throw err;
+		}
+	}
 	const picture = sharp(input)
 	.composite(arr)
 	.png()
 	.toBuffer()
 	.then(data => {
-		fs.writeFile(`${process.env.MAP_DIR}/${name}`, data, function (err) {
-			if (err) throw(err);
-			LOCKED.slice(LOCKED.indexOf(name), 1);
-		});
+		fs.writeFileSync(`${process.env.MAP_DIR}/${name}`, data);
 	});
 	return (picture);
 }
@@ -100,16 +109,26 @@ module.exports = {
 								function(error, res, fields) {
 									connection.release();
 									if (error) throw error;
-									createMap(`${values.x},${values.y}.png`, arr, LOCKED).then (data => {
-										log.write({ start: stamp, message: `New map(${values.x},${values.y}}) generated` });
+									try {
+										createMap(`${values.x},${values.y}.png`, arr, LOCKED).then (data => {
+											log.write({ start: stamp, message: `New map(${values.x},${values.y}}) generated` });
+											callback();
+										});
+									} catch(err) {
+										console.log('createMap: ', err);
 										callback();
-									});
+									}
 								});
 							});
 						} else {
-							colorMap(res[0]['path'], arr, LOCKED).then(data => {
+							try {
+								colorMap(res[0]['path'], arr, LOCKED).then(data => {
+									callback();
+								});
+							} catch(err) {
+								console.log('colortMap: ', err);
 								callback();
-							});
+							}
 						}
 					});
 				});
