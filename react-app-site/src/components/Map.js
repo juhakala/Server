@@ -197,7 +197,7 @@ const Map = () => {
 		<div className='mapBody' onClick={hideMenu}>
 			<p className='info'>
 				<strong>map controls</strong><br/>
-				zoom with mouse or pad<br/>
+				zoom with mousewheel or pad<br/>
 				move with mouse down<br/>
 				map selection context menu (right click)<br/>
 			</p>

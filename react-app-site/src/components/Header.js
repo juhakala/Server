@@ -31,6 +31,9 @@ const Header = ({ status }) => {
 			<div className="navItem">
 				<a className="navLink" href="/#/log">Log</a>
 			</div>
+			<div className="navItem">
+				<a className="navLink" href="/#/cube">Cube</a>
+			</div>
 			<div style={navHome} className="navItem">
 				<a className="navLink" href="/#/user">{status.data.name}</a>
 			</div>
@@ -50,6 +53,9 @@ const Header = ({ status }) => {
 			</div>
 			<div className="navItem">
 				<a className="navLink" href="/#/log">Log</a>
+			</div>
+			<div className="navItem">
+				<a className="navLink" href="/#/cube">Cube</a>
 			</div>
 			<div style={navHome} className="navItem">
 				<a className="navLink" href="/#/login">Login</a>

@@ -7,6 +7,7 @@ import Login from "./components/Login"
 import Admin from "./components/Admin"
 import Log from "./components/Log"
 import Tasks from "./components/Tasks"
+import Cube from "./components/Cube"
 import "./css/App.css"
 import { useEffect, useState } from "react"
 import axios from "axios"
@@ -32,6 +33,7 @@ function App() {
 						<Route path="/admin" exact component={()=> <Admin status={status}/>} />
 						<Route path="/log" exact component={()=> <Log />} />
 						<Route path="/tasks" exact component={()=> <Tasks />} />
+						<Route path="/cube" exact component={()=> <Cube />} />
 					</Switch>
 				</div>
 				<Footer />
