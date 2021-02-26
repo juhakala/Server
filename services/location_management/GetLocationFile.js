@@ -46,5 +46,21 @@ module.exports = function (app, pool, LOCKED) {
 			res.send('Error:  bad syntax');
 			log.write({start: stamp, message: `Unauthorized location update`})
 		}
+	}),
+	app.get('/api/mysql/:x', (req, res) => {
+		pool.getConnection(function(err, connection) {
+			if (err) throw err;
+			const x = parseInt(req.params.x);
+			connection.query(`SELECT * FROM coordinates ORDER BY id DESC LIMIT ?`, [x] , function(error, qres, fields) {
+				console.log(qres);
+				console.log('{"locations":[');
+				qres.forEach(item => {
+					console.log(`{ "type": "Feature", "geometry": {"coordinates":[${item.lat/10000000},${item.lon/10000000}], "altitude": 3, "timestamp": 123, "properties": {"speed":${item.speed}} },`);
+				});
+				console.log(']}');
+				connection.release();
+				res.status(200).send('ok');
+			})
+		});
 	});
 }
