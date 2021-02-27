@@ -95,18 +95,16 @@ module.exports = {
 		try {
 			async.eachSeries(obj, function(arr, callback) {
 				pool.getConnection(function(err, connection) {
-					console.log('con1');
 					const values = { x:arr[0].x, y:arr[0].y};
+					console.log('con1:', arr[0].x, arr[0].y);
 					if (err) throw err;
 					connection.query(`SELECT path FROM maps WHERE x = ? AND y = ?`, [arr[0].x, arr[0].y],
 					function(error, res, fields) {
 						connection.release();
-						console.log('con2');
+						console.log('con2:', values.x, values.y);
 						if (error) throw error;
 						if (!res[0]) {
 							pool.getConnection(function(err, connection) {
-								console.log('con2');
-
 								if (err) throw err;
 								connection.query(`INSERT INTO maps (path, x, y) VALUES (?, ?, ?)`, [`${values.x},${values.y}.png`, values.x, values.y],
 								function(error, res, fields) {
@@ -115,7 +113,7 @@ module.exports = {
 									try {
 										createMap(`${values.x},${values.y}.png`, arr, LOCKED).then (data => {
 											log.write({ start: stamp, message: `New map(${values.x},${values.y}}) generated` });
-											console.log('in callback');
+											console.log('in callback:', values.x, values.y);
 											callback();
 										});
 									} catch(err) {
@@ -127,7 +125,7 @@ module.exports = {
 						} else {
 							try {
 								colorMap(res[0]['path'], arr, LOCKED).then(data => {
-									console.log('another callback');
+									console.log('another callback:',  values.x, values.y);
 									callback();
 								});
 							} catch(err) {

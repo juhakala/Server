@@ -58,10 +58,12 @@ module.exports = function (app, pool, LOCKED) {
 		}
 	}),
 	app.get('/api/mysql/:x', (req, res) => {
+		res.status(401).end();
+		return ;
 		pool.getConnection(function(err, connection) {
 			if (err) throw err;
 			const x = parseInt(req.params.x);
-			connection.query(`SELECT * FROM coordinates ORDER BY id DESC LIMIT ?`, [x] , function(error, qres, fields) {
+			connection.query(`SELECT * FROM coordinates WHERE id>? LIMIT 50;`, [x] , function(error, qres, fields) {
 				connection.release();
 				if (error) throw error;
 				console.log('{"locations":[');
