@@ -41,14 +41,7 @@ function colorMap(name, arr, LOCKED) {
 	} catch(err) {
 		if (err.code === 'ENOENT') {
 			console.log(`colorMap, file not found (${name}): `, err);
-			input = {
-				create: {
-					width: 10000,
-					height: 10000,
-					channels: 4,
-					background: { r: 0, g: 0, b: 0, alpha: 1 }
-				}
-			}
+			input = { create: { width: 10000, height: 10000, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 1 } } }
 		} else {
 			throw err;
 		}
@@ -92,56 +85,37 @@ module.exports = {
 		]);
 	},
 	drawToMap: function (obj, pool, LOCKED, stamp, len) {
-		try {
-			async.eachSeries(obj, function(arr, callback) {
-				pool.getConnection(function(err, connection) {
-					const values = { x:arr[0].x, y:arr[0].y};
-					console.log('con1:', arr[0].x, arr[0].y);
-					if (err) throw err;
-					connection.query(`SELECT path FROM maps WHERE x = ? AND y = ?`, [arr[0].x, arr[0].y],
-					function(error, res, fields) {
-						connection.release();
-						console.log('con2:', values.x, values.y);
-						if (error) throw error;
-						if (!res[0]) {
-							pool.getConnection(function(err, connection) {
-								if (err) throw err;
-								connection.query(`INSERT INTO maps (path, x, y) VALUES (?, ?, ?)`, [`${values.x},${values.y}.png`, values.x, values.y],
-								function(error, res, fields) {
-									connection.release();
-									if (error) throw error;
-									try {
-										createMap(`${values.x},${values.y}.png`, arr, LOCKED).then (data => {
-											log.write({ start: stamp, message: `New map(${values.x},${values.y}}) generated` });
-											console.log('in callback:', values.x, values.y);
-											callback();
-										});
-									} catch(err) {
-										console.log('createMap: ', err);
-										callback();
-									}
-								});
-							});
-						} else {
-							try {
-								colorMap(res[0]['path'], arr, LOCKED).then(data => {
-									console.log('another callback:',  values.x, values.y);
+		async.eachSeries(obj, function(arr, callback) {
+			pool.getConnection(function(err, connection) {
+				const values = { x:arr[0].x, y:arr[0].y};
+				if (err) throw err;
+				connection.query(`SELECT path FROM maps WHERE x = ? AND y = ?`, [arr[0].x, arr[0].y],
+				function(error, res, fields) {
+					connection.release();
+					if (error) throw error;
+					if (!res[0]) {
+						pool.getConnection(function(err, connection) {
+							if (err) throw err;
+							connection.query(`INSERT INTO maps (path, x, y) VALUES (?, ?, ?)`, [`${values.x},${values.y}.png`, values.x, values.y],
+							function(error, res, fields) {
+								connection.release();
+								if (error) throw error;
+								createMap(`${values.x},${values.y}.png`, arr, LOCKED).then (data => {
+									log.write({ start: stamp, message: `New map(${values.x},${values.y}}) generated` });
 									callback();
 								});
-							} catch(err) {
-								console.log('colortMap: ', err);
-								callback();
-							}
-						}
-					});
+							});
+						});
+					} else {
+						colorMap(res[0]['path'], arr, LOCKED).then(data => {
+							callback();
+						});
+					}
 				});
-			}, function(err) {
-				if (err) throw(err);
-				log.write({start: stamp, message: `Maps updated: +${len} points`})
 			});
-		} catch(err) {
-			console.log('drawToMap: ', err);
-
-		}
+		}, function(err) {
+			if (err) throw(err);
+			log.write({start: stamp, message: `Maps updated: +${len} points`})
+		});
 	}
 };

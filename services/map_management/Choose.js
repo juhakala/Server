@@ -4,18 +4,15 @@ const myf = require('../my_functions');
 module.exports = function (app, pool) {
 	app.get('/api/maps', (req, res) => {
 		if (myf.checkOrig(req) === true) {
-			try {
-				pool.getConnection(function(err, connection) {
+			pool.getConnection(function(err, connection) {
+				if (err) throw err;
+				connection.query(`SELECT * FROM maps`, function(error, qres, fields) {
+					connection.release();
 					if (err) throw err;
-					connection.query(`SELECT * FROM maps`, function(error, qres, fields) {
-//						console.log(qres);
-						res.status(200);
-						res.send(JSON.stringify(qres));
-					});
+					res.status(200);
+					res.send(JSON.stringify(qres));
 				});
-			} catch(err) {
-				console.log(err);
-			}
+			});
 		}
 	}),
 	app.get('/api/createmap/:x/:y', (req, res) => {

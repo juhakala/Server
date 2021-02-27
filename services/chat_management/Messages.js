@@ -8,18 +8,14 @@ module.exports = function (app, pool) {
 				res.status(403).end();
 			res.status(200);
 			res.set('Content-Type', 'text/plain');
-			try {
-				pool.getConnection(function(err, connection) {
-				   if (err) throw err;
-				   connection.query(`SELECT * FROM messages ORDER BY id DESC LIMIT ?, 8`, [count], function(error, qres, fields) {
-					   connection.release();
-					   if (error) throw error;
-					   res.send(JSON.stringify(qres.reverse()));
-				   });
-				});
-			} catch (err) {
-				console.log('messages: ', err);
-			}
+			pool.getConnection(function(err, connection) {
+			   if (err) throw err;
+			   connection.query(`SELECT * FROM messages ORDER BY id DESC LIMIT ?, 8`, [count], function(error, qres, fields) {
+				   connection.release();
+				   if (error) throw error;
+				   res.send(JSON.stringify(qres.reverse()));
+			   });
+			});
 		} else {
 			res.status(403).end();
 		}

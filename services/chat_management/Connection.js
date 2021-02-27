@@ -8,25 +8,21 @@ module.exports = function (io, pool) {
 			numClients--;
 		});
 		socket.on("chat", (arg) => {
-			arg = arg.slice(0, 255);
-			try {
-				pool.getConnection(function(err, connection) {
-					const send_date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-					if (err) throw err;
-					arg = myf.escapeHTML(arg);
-					arg = arg.slice(0, 255);
-					connection.query(`INSERT INTO messages (author, content, send_date) VALUES (
-						'testuser', ?, '${send_date}')`, [arg],
-					function(error, qres, fields) {
-						const id = qres.insertId;
-						connection.release();
-						if (error) throw error;
-						io.emit('addmessage',  {id:id, author:'testuser', content:arg, send_date:send_date });
-					});
-				})
-			} catch (err) {
-				console.log('socket.io: ', err);
-			}
+		arg = arg.slice(0, 255);
+			pool.getConnection(function(err, connection) {
+				const send_date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+				if (err) throw err;
+				arg = myf.escapeHTML(arg);
+				arg = arg.slice(0, 255);
+				connection.query(`INSERT INTO messages (author, content, send_date) VALUES (
+					'testuser', ?, '${send_date}')`, [arg],
+				function(error, qres, fields) {
+					connection.release();
+					const id = qres.insertId;
+					if (error) throw error;
+					io.emit('addmessage',  {id:id, author:'testuser', content:arg, send_date:send_date });
+				});
+			})
 		});
 	});
 }

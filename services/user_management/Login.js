@@ -21,36 +21,30 @@ const tokens = async (res, payload) => {
 module.exports = function (app, pool) {
 	app.post('/api/login', (req, res) => {
 		if (myf.checkOrig(req) === true) {
-			try {
-				pool.getConnection(function(err, connection) {
-					if (err) throw err;
-					connection.query(`SELECT * FROM users WHERE email=?`, [req.body.email],
-					function(error, qres, fields) {
-						connection.release();
-						if (error) throw error;
-						if (qres.length != 1 ) {
-							res.status(401).end();
-						} else {
-							bcrypt.compare(req.body.passwd, qres[0].salt, function(err, result) {
-//								console.log(result)
-								if (result === true) {
-									tokens(res, { username: qres[0].name, email: qres[0].email });
-								} else {
-									res.status(401).end();
-								}
-							});
-						}
-					});
+			pool.getConnection(function(err, connection) {
+				if (err) throw err;
+				connection.query(`SELECT * FROM users WHERE email=?`, [req.body.email],
+				function(error, qres, fields) {
+					connection.release();
+					if (error) throw error;
+					if (qres.length != 1 ) {
+						res.status(401).end();
+					} else {
+						bcrypt.compare(req.body.passwd, qres[0].salt, function(err, result) {
+							if (result === true) {
+								tokens(res, { username: qres[0].name, email: qres[0].email });
+							} else {
+								res.status(401).end();
+							}
+						});
+					}
 				});
-			} catch(err) {
-				console.log('Login: ', err);
-			}
+			});
 		} else {
 			res.status(403).end();
 		}
 	}),
 	app.get('/api/verify', (req, res) => {
-//		console.log('in verify');
 		const token = req.cookies.jwt;
 		if (!token)
 			return res.status(401).end();
@@ -58,25 +52,19 @@ module.exports = function (app, pool) {
 		try {
 			payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
 		} catch (e) {
-			if (e instanceof jwt.JsonWebTokenError) { // WT is unauthorized
-//				console.log('time is up?!');
+			if (e instanceof jwt.JsonWebTokenError) { // JWT is unauthorized
 				return res.status(401).end()
 			}
 			return res.status(400).end()
 		}
-		try {
-			pool.getConnection(function(err, connection) {
-				if (err) throw err;
-				connection.query(`SELECT * FROM users WHERE name=?`, [payload.username],
-					function(error, qres, fields) {
-						connection.release();
-						res.send(JSON.stringify(qres[0]));
-//						console.log('verifyed!');
-				});
+		pool.getConnection(function(err, connection) {
+			if (err) throw err;
+			connection.query(`SELECT * FROM users WHERE name=?`, [payload.username],
+				function(error, qres, fields) {
+					connection.release();
+					res.send(JSON.stringify(qres[0]));
 			});
-		} catch (err) {
-			console.log(err)
-		}
+		});
 	}),
 	app.post('/api/logout', (req, res) => {
 		const token = req.cookies.jwt;
@@ -94,8 +82,7 @@ module.exports = function (app, pool) {
 		try {
 			payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
 		} catch (e) {
-			if (e instanceof jwt.JsonWebTokenError) { // WT is unauthorized
-//				console.log('time is up?!');
+			if (e instanceof jwt.JsonWebTokenError) {
 				return res.status(401).end()
 			}
 			return res.status(400).end()
