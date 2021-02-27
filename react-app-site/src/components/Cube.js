@@ -99,7 +99,7 @@ const Cube = () => {
 	}
 	return (
 		<div className='boardWrap'>
-			<p className='info'><strong>controls:</strong><br/>
+			<p className='boardInfo'><strong>controls:</strong><br/>
 				dbclick => fullscreen<br/>
 				mouse drag => rotate board<br/>
 				contextmenu drag => move board <br/>

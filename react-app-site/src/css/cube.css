@@ -9,7 +9,7 @@
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
-.info {
+.boardInfo {
 	position: absolute;
 	width: 100%;
 }
