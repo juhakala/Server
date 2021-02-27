@@ -8,10 +8,11 @@ const SCALE = 5;
 const COLOR1 = '#8F6950';
 const COLOR2 = '#E4C8A1';
 
-function Box({ position, color }) {
+function Box({ position, color, lock }) {
 	const [active, setActive] = useState(false);
 	const handleClick = () => {
-		setActive(!active);
+		if (lock !== false)
+			setActive(!active);
 	}
 
 	return (
@@ -22,22 +23,22 @@ function Box({ position, color }) {
 	)
 }
 
-const BoardRow = ({row, color}) => {
+const BoardRow = ({row, color, lock}) => {
 	return (
 		<>
-		<Box position={[0, row, 0]} color={color} />
-		<Box position={[1, row, 0]} color={color} />
-		<Box position={[2, row, 0]} color={color} />
-		<Box position={[3, row, 0]} color={color} />
-		<Box position={[4, row, 0]} color={color} />
-		<Box position={[5, row, 0]} color={color} />
-		<Box position={[6, row, 0]} color={color} />
-		<Box position={[7, row, 0]} color={color} />
+		<Box position={[0, row, 0]} color={color} lock={lock} />
+		<Box position={[1, row, 0]} color={color} lock={lock} />
+		<Box position={[2, row, 0]} color={color} lock={lock} />
+		<Box position={[3, row, 0]} color={color} lock={lock} />
+		<Box position={[4, row, 0]} color={color} lock={lock} />
+		<Box position={[5, row, 0]} color={color} lock={lock} />
+		<Box position={[6, row, 0]} color={color} lock={lock} />
+		<Box position={[7, row, 0]} color={color} lock={lock} />
 		</>
 	)
 }
 
-const Board = ({position}) => {
+const Board = ({position, lock}) => {
 	const mesh = useRef()
 	useFrame(() => {
 //		mesh.current.rotation.x = mesh.current.rotation.y += 0.005
@@ -48,19 +49,19 @@ const Board = ({position}) => {
 
 	return (
 		<mesh visible ref={mesh} position={position} >
-			<BoardRow row={0} color={[COLOR1, COLOR2]}/>
-			<BoardRow row={1} color={[COLOR2, COLOR1]}/>
-			<BoardRow row={2} color={[COLOR1, COLOR2]}/>
-			<BoardRow row={3} color={[COLOR2, COLOR1]}/>
-			<BoardRow row={4} color={[COLOR1, COLOR2]}/>
-			<BoardRow row={5} color={[COLOR2, COLOR1]}/>
-			<BoardRow row={6} color={[COLOR1, COLOR2]}/>
-			<BoardRow row={7} color={[COLOR2, COLOR1]}/>
+			<BoardRow row={0} color={[COLOR1, COLOR2]} lock={lock} />
+			<BoardRow row={1} color={[COLOR2, COLOR1]} lock={lock} />
+			<BoardRow row={2} color={[COLOR1, COLOR2]} lock={lock} />
+			<BoardRow row={3} color={[COLOR2, COLOR1]} lock={lock} />
+			<BoardRow row={4} color={[COLOR1, COLOR2]} lock={lock} />
+			<BoardRow row={5} color={[COLOR2, COLOR1]} lock={lock} />
+			<BoardRow row={6} color={[COLOR1, COLOR2]} lock={lock} />
+			<BoardRow row={7} color={[COLOR2, COLOR1]} lock={lock} />
 		</mesh>
 	)
 }
 
-const Camera = ({ position }) => {
+const Camera = ({ position, lock }) => {
 /*	const ref = useRef();
 	const { setDefaultCamera } = useThree();
 	useEffect(() => void setDefaultCamera(ref.current), []);
@@ -69,24 +70,19 @@ const Camera = ({ position }) => {
 		<perspectiveCamera ref={ref} position={position} />
 	)*/
 	const { camera, gl } = useThree();
-	useEffect(
-	  () => {
-
+	useEffect(() => {
 		const controls = new OrbitControls(camera, gl.domElement);
-  
 		controls.minDistance = 1;
 		controls.maxDistance = 20;
-		return () => {
-		  controls.dispose();
-		};
-	  },
-	  [camera, gl]
-	);
+		controls.enableRotate = !lock;
+		controls.enableZoom = !lock;
+		return () => { controls.dispose();};
+	}, [camera, gl, lock]);
 	return null;
-
 }
 
 const Cube = () => {
+	const [lock, setLock] = useState(false);
 	const handleFullScreen = () => {
 		const elem = document.getElementsByClassName('boardCanvas')[0];
 		if (!document.fullscreenElement) {
@@ -94,8 +90,9 @@ const Cube = () => {
 				elem.requestFullscreen();
 			else if (elem.webkitRequestFullscreen) /* Safari */
 				elem.webkitRequestFullscreen();
-		} else
-			document.exitFullscreen();
+		} else {
+//			document.exitFullscreen();
+		}
 	}
 	return (
 		<div className='boardWrap'>
@@ -106,13 +103,24 @@ const Cube = () => {
 				mousewheel/pad => zoom board <br/>
 				click tile(s) => active tile
 			</p>
-			<Canvas className='boardCanvas' style={{width:700,height:500,background:'grey'}}
-			onDoubleClick={() => handleFullScreen()}>
-				<Camera position={[0, 0, 0]} />
-				<ambientLight />
-				<pointLight position={[-10, 10, 10]} />
-				<Board position={[-0.35 * SCALE, -0.35 * SCALE, 0 * SCALE]} />
-			</Canvas>
+			<div className='lockToggle'>
+				<label className="label">
+					<div className="toggle" style={{ 'background': lock === false ? 'grey' : '#039dfc' }}>
+						<input className="toggle-state" type="checkbox" name="check" value="check" onClick={() => setLock(!lock)}/>
+ 						<div className="indicator"></div>
+					</div>
+					<div className="label-text">disable Board rotate/zoom</div>
+				</label>
+			</div>
+			<div className='boardCanvasWrap'>
+				<Canvas className='boardCanvas' style={{width:'100%',height:'100%',background:'grey'}}
+				onDoubleClick={() => handleFullScreen()}>
+					<Camera position={[0, 0, 0]} lock={lock} />
+					<ambientLight />
+					<pointLight position={[-10, 10, 10]} />
+					<Board position={[-0.35 * SCALE, -0.35 * SCALE, 0 * SCALE]} lock={lock} />
+				</Canvas>
+			</div>
 		</div>
 	)
 }

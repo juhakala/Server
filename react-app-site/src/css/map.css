@@ -5,17 +5,17 @@
 }
 .mapWrap {
 	margin: auto;
-	height: 70vh;
-	width: 70vh;
-	max-height: 100%;
+	height: 700px;
+	width: 700px;
+	max-height: calc(100vh - 96px);
 	max-width: 100vw;
-	min-height: 70vh;
-	min-width: 70vh;
 	background: grey;
 }
 .imgWrap {
 	width: inherit;
 	height: inherit;
+	max-width: inherit;
+	max-height: inherit;
 	overflow: hidden;
 }
 .image {

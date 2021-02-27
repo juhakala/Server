@@ -23,13 +23,8 @@ const MenuWrap = ({ map, setMap, dimensions }) => {
 	for (var i = 0; i < numEmpty; i++) {
 		empties.push(<div key={-i} className='empty' />);
 	}
-//	map.forEach(item => {
-//		console.log(dimensions.columns + item.x, dimensions.columns, item.x)
-//		console.log(dimensions.rows + item.y, dimensions.rows, item.y);		
-//	});
 	return (
 		<div className='menuWrap'>
-			{map.map((item, index) => <p style={{ cursor:'pointer', width:'fit-content' }}key={item.id} onClick={() => changeToMap(index)}>{item.path}</p>)}
 			<div style={gridStyle} className='gridContainer'>
 				{empties}
 				{map.map((item, index) => 
@@ -138,6 +133,31 @@ const Image = ({map, setMap, dimensions}) => {
 		elem.style.left = event.clientX + 'px';
 		elem.style.top = event.clientY - bound.y + 'px';
 	}
+
+	var tapedTwice = false;
+	const handleTouchStart = (event) => {
+		if (!tapedTwice) {
+			tapedTwice = true;
+			setTimeout( function() { tapedTwice = false; }, 300 );
+			return false;
+		}
+//		event.preventDefault();
+		console.log('koskit kaksi');
+	}
+
+	const handleTouchEnd = (event) => {
+
+	}
+
+	const handleTouchMove = (event) => {
+		event.preventDefault();
+//		console.log(event.changedTouches[0])
+//		console.log(event.changedTouches[0].clientX)
+		if (event.target !== document.getElementsByClassName('image')[0])
+			return ;
+		console.log('inside');
+		mouseStart = [event.changedTouches[0].clientX, event.changedTouches[0].clienty];
+	}
 	return (
 		<>
 			<div className="center" onClick={ centerToHome }>center</div>
@@ -148,6 +168,11 @@ const Image = ({map, setMap, dimensions}) => {
 					onWheel={ handleScroll }
 					onMouseEnter={ disableScroll }
 					onMouseLeave={ enableScroll }
+				// mobile device toutch events
+					onTouchStart={ handleTouchStart }
+//					onTouchEnd={ handleTouchEnd }
+//					onTouchMoveCapture={handleTouchMove}
+
 				>
 					<img className='image' src={`https://juhakala.com/maps/${map[selectedMap].path}`} alt='baseImg'/>
 				</div>
