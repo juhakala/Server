@@ -83,25 +83,17 @@ const Image = ({map, setMap, dimensions}) => {
 		if (parseFloat(bound2.width) * factor > 40000 || parseFloat(bound2.width) * factor < 300 )
 			return ;
 		elem2.style.width = (parseFloat(bound2.width) * factor) + 'px';
-
-		const currentMouseY = event.clientY - bound1.y;
-		const currentMouseX = event.clientX - bound1.x;
-
-		const xx = bound2.x - bound1.x;
-		const yy = bound2.y - bound1.y;
-
-		const dx = (currentMouseX - xx) * (factor - 1);
-		const dy = (currentMouseY - yy) * (factor - 1);
-		elem2.style.left = (xx - dx) + 'px';
-		elem2.style.top = (yy - dy) + 'px';
+		elem2.style.left = ((bound2.x - bound1.x) - (((event.clientX - bound1.x) - (bound2.x - bound1.x)) * (factor - 1))) + 'px';
+		elem2.style.top = ((bound2.y - bound1.y) - (((event.clientY - bound1.y) - (bound2.y - bound1.y)) * (factor - 1))) + 'px';
 	}
 
 	const disableScroll = () => {
-		document.getElementsByClassName('mapBody')[0].style.overflow = "hidden";
+//		document.getElementsByClassName('mapBody')[0].style.overflow = "hidden";
 	}
 	const enableScroll = () => {
-		document.getElementsByClassName('mapBody')[0].style.overflow = "overlay";
+//		document.getElementsByClassName('mapBody')[0].style.overflow = "overlay";
 	}
+
 	const fullScreen = (event) => {
 		event.preventDefault();
 		const elem = document.getElementsByClassName('mapWrap')[0];
@@ -137,11 +129,14 @@ const Image = ({map, setMap, dimensions}) => {
 	var tapedTwice = false;
 	const handleTouchStart = (event) => {
 		if (!tapedTwice) {
+			if (event.target.style.left)
+				imgStart = [event.changedTouches[0].clientX - parseInt(event.target.style.left), event.changedTouches[0].clientY - parseInt(event.target.style.top)]
+			else
+				imgStart = [event.changedTouches[0].clientX, event.changedTouches[0].clientY]
 			tapedTwice = true;
 			setTimeout( function() { tapedTwice = false; }, 300 );
 			return false;
 		}
-//		event.preventDefault();
 		console.log('koskit kaksi');
 	}
 
@@ -150,14 +145,16 @@ const Image = ({map, setMap, dimensions}) => {
 	}
 
 	const handleTouchMove = (event) => {
-		event.preventDefault();
-//		console.log(event.changedTouches[0])
-//		console.log(event.changedTouches[0].clientX)
 		if (event.target !== document.getElementsByClassName('image')[0])
 			return ;
-		console.log('inside');
-		mouseStart = [event.changedTouches[0].clientX, event.changedTouches[0].clienty];
+		event.target.style.left = (event.changedTouches[0].clientX - imgStart[0]) + "px";
+		event.target.style.top = (event.changedTouches[0].clientY - imgStart[1]) + "px";
 	}
+	useEffect(() => {
+		document.getElementsByClassName('imgWrap')[0].addEventListener('wheel', (e) => { e.preventDefault(); }, {passive: false} );
+		document.getElementsByClassName('imgWrap')[0].addEventListener('touchmove', (e) => { e.preventDefault(); }, {passive: false} );
+	},[])
+
 	return (
 		<>
 			<div className="center" onClick={ centerToHome }>center</div>
@@ -168,10 +165,10 @@ const Image = ({map, setMap, dimensions}) => {
 					onWheel={ handleScroll }
 					onMouseEnter={ disableScroll }
 					onMouseLeave={ enableScroll }
-				// mobile device toutch events
+//					mobile device toutch events
 					onTouchStart={ handleTouchStart }
-//					onTouchEnd={ handleTouchEnd }
-//					onTouchMoveCapture={handleTouchMove}
+					//onTouchEnd={ handleTouchEnd }
+					onTouchMove={ handleTouchMove }
 
 				>
 					<img className='image' src={`https://juhakala.com/maps/${map[selectedMap].path}`} alt='baseImg'/>
