@@ -95,7 +95,7 @@ const Image = ({map, setMap, dimensions}) => {
 	}
 
 	const fullScreen = (event) => {
-		event.preventDefault();
+//		event.preventDefault();
 		const elem = document.getElementsByClassName('mapWrap')[0];
 		if (!document.fullscreenElement) {
 			if (elem.requestFullscreen)
@@ -126,6 +126,8 @@ const Image = ({map, setMap, dimensions}) => {
 		elem.style.top = event.clientY - bound.y + 'px';
 	}
 
+
+	var evCache = [];
 	var tapedTwice = false;
 	const handleTouchStart = (event) => {
 		if (!tapedTwice) {
@@ -134,17 +136,30 @@ const Image = ({map, setMap, dimensions}) => {
 			else
 				imgStart = [event.changedTouches[0].clientX, event.changedTouches[0].clientY]
 			tapedTwice = true;
+			evCache.push(event);
+//			console.log("pointerDown", event);
 			setTimeout( function() { tapedTwice = false; }, 300 );
 			return false;
 		}
-		console.log('koskit kaksi');
+		fullScreen();
+//		console.log('koskit kaksi');
 	}
 
 	const handleTouchEnd = (event) => {
-
+		evCache = [];
 	}
 
 	const handleTouchMove = (event) => {
+		for (var i = 0; i < evCache.length; i++) {
+			if (event.pointerId == evCache[i].pointerId) {
+				evCache[i] = event;
+				break;
+			}
+		}
+		if (evCache.length == 2) {
+			console.log('double');
+			document.getElementsByClassName('center')[0].style.background = 'blue';
+		}
 		if (event.target !== document.getElementsByClassName('image')[0])
 			return ;
 		event.target.style.left = (event.changedTouches[0].clientX - imgStart[0]) + "px";
@@ -162,12 +177,12 @@ const Image = ({map, setMap, dimensions}) => {
 				<div className='imgWrap'
 					onContextMenu={ mapSelector }
 					onMouseDown={ mouseDownEvent }
-					onWheel={ handleScroll }
+//					onWheel={ handleScroll }
 					onMouseEnter={ disableScroll }
 					onMouseLeave={ enableScroll }
 //					mobile device toutch events
 					onTouchStart={ handleTouchStart }
-					//onTouchEnd={ handleTouchEnd }
+					onTouchEnd={ handleTouchEnd }
 					onTouchMove={ handleTouchMove }
 
 				>
