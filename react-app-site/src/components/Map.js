@@ -130,40 +130,49 @@ const Image = ({map, setMap, dimensions}) => {
 	var evCache = [];
 	var tapedTwice = false;
 	const handleTouchStart = (event) => {
+		evCache.push(event);
 		if (!tapedTwice) {
 			if (event.target.style.left)
 				imgStart = [event.changedTouches[0].clientX - parseInt(event.target.style.left), event.changedTouches[0].clientY - parseInt(event.target.style.top)]
 			else
 				imgStart = [event.changedTouches[0].clientX, event.changedTouches[0].clientY]
 			tapedTwice = true;
-			evCache.push(event);
-//			console.log("pointerDown", event);
 			setTimeout( function() { tapedTwice = false; }, 300 );
 			return false;
 		}
-		fullScreen();
-//		console.log('koskit kaksi');
+		if (evCache.length < 2) {
+			fullScreen();
+//			console.log('koskit kaksi');
+		}
 	}
 
 	const handleTouchEnd = (event) => {
-		evCache = [];
+		evCache.pop();
+		document.getElementsByClassName('center')[0].style.background = 'grey';
 	}
 
 	const handleTouchMove = (event) => {
-		for (var i = 0; i < evCache.length; i++) {
-			if (event.pointerId == evCache[i].pointerId) {
-				evCache[i] = event;
-				break;
-			}
-		}
-		if (evCache.length == 2) {
+//		for (var i = 0; i < evCache.length; i++) {
+//			if (event.pointerId == evCache[i].pointerId) {
+//				evCache[i] = event;
+//				break;
+//			}
+//		}
+//		dont think i need this yet?
+		if (evCache.length === 2) {
 			console.log('double');
 			document.getElementsByClassName('center')[0].style.background = 'blue';
+			const dist = Math.sqrt(
+				Math.pow(evCache[0].changedTouches[0].clientX-evCache[1].changedTouches[0].clientX, 2)
+				+ Math.pow(evCache[0].changedTouches[0].clientY-evCache[1].changedTouches[0].clientY, 2)
+				);
+			document.getElementsByClassName('center')[0].innerHTML = dist + 'px';
+		} else {
+			if (event.target !== document.getElementsByClassName('image')[0])
+				return ;
+			event.target.style.left = (event.changedTouches[0].clientX - imgStart[0]) + "px";
+			event.target.style.top = (event.changedTouches[0].clientY - imgStart[1]) + "px";
 		}
-		if (event.target !== document.getElementsByClassName('image')[0])
-			return ;
-		event.target.style.left = (event.changedTouches[0].clientX - imgStart[0]) + "px";
-		event.target.style.top = (event.changedTouches[0].clientY - imgStart[1]) + "px";
 	}
 	useEffect(() => {
 		document.getElementsByClassName('imgWrap')[0].addEventListener('wheel', (e) => { e.preventDefault(); }, {passive: false} );
@@ -177,7 +186,7 @@ const Image = ({map, setMap, dimensions}) => {
 				<div className='imgWrap'
 					onContextMenu={ mapSelector }
 					onMouseDown={ mouseDownEvent }
-//					onWheel={ handleScroll }
+					onWheel={ handleScroll }
 					onMouseEnter={ disableScroll }
 					onMouseLeave={ enableScroll }
 //					mobile device toutch events
