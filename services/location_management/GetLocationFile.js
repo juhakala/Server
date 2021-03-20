@@ -4,6 +4,18 @@ const log = require('./../log_management/Write')
 const dotenv = require('dotenv');
 dotenv.config();
 
+function wait_to_draw(arr, pool, LOCKED, stamp, length) {
+	if (global.free === true) {
+		console.log('global.free === true, draw');
+		global.free = false;
+		myf.drawToMap(arr, pool, LOCKED, stamp, length);
+	}
+	else {
+		console.log('global.free === false, wait 30s');
+		setTimeout(function() { wait_to_draw(arr, pool, LOCKED, stamp, length) }, 30000);
+	}
+}
+
 module.exports = function (app, pool, LOCKED) {
 	app.post('/api/location', (req, res) => {
 		const stamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -32,7 +44,7 @@ module.exports = function (app, pool, LOCKED) {
 				if (err) throw(err);
 				res.status(200);
 				res.send('OKK');
-				myf.drawToMap(arr, pool, LOCKED, stamp, req.body.locations.length);
+				wait_to_draw(arr, pool, LOCKED, stamp, req.body.locations.length);
 			});
 		} else {
 			res.status(400);

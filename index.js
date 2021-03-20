@@ -20,6 +20,7 @@ redir.get('/', (req, res) => {
 });
 
 const LOCKED = [];
+global.free = true;
 
 var pool  = mysql.createPool({
 	connectionLimit : 10,
@@ -54,4 +55,16 @@ httpServer.listen(process.env.HTTP_PORT, () => {
 });
 httpsServer.listen(process.env.HTTPS_PORT, () => {
 	console.log('HTTPS Server running on port', process.env.HTTPS_PORT);
+});
+
+process.on('SIGTERM', () => {
+	console.info('SIGTERM signal received.');
+	console.log('Closing http server.');
+	httpServer.close(() => {
+		console.log('Http server closed.');
+		httpsServer.close(() => {
+			console.log('Https server closed.');
+			process.exit(0);
+		})
+	});
 });

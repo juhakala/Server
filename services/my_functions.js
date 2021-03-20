@@ -116,6 +116,8 @@ module.exports = {
 		}, function(err) {
 			if (err) throw(err);
 			log.write({start: stamp, message: `Maps updated: +${len} points`})
+			global.free = true;
+			console.log('draw done');
 		});
 	}
 };

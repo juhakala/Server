@@ -23,6 +23,12 @@ const MenuWrap = ({ map, setMap, dimensions }) => {
 	for (var i = 0; i < numEmpty; i++) {
 		empties.push(<div key={-i} className='empty' />);
 	}
+	console.log('dc',dimensions.columns);
+	console.log('dr',dimensions.rows);
+	console.log(dimensions);
+	map.forEach(item => {
+		console.log(item.x, item.y, Math.abs(dimensions.xMin) + item.x + 1, Math.abs(dimensions.yMin) + item.y + 1);
+	});
 	return (
 		<div className='menuWrap'>
 			<div style={gridStyle} className='gridContainer'>
@@ -31,8 +37,8 @@ const MenuWrap = ({ map, setMap, dimensions }) => {
 				<div
 					onClick={() => changeToMap(index)}
 					style={{
-						gridColumn: dimensions.columns + item.x,
-						gridRow: dimensions.rows + item.y,
+						gridColumn: Math.abs(dimensions.xMin) + item.x + 1,
+						gridRow: Math.abs(dimensions.yMin) + item.y + 1,
 						background: index !== 0 ? 'coral' : 'blue',
 					}}
 					className='gridItem'
