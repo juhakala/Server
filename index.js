@@ -37,6 +37,7 @@ require('./services/chat_management/Messages')(app, pool);
 require('./services/map_management/Choose')(app, pool);
 require('./services/location_management/GetLocationFile')(app, pool, LOCKED);
 require('./services/log_management/Send')(app);
+require('./services/check_fibo')(app);
 
 const credentials = {
 	key: fs.readFileSync(process.env.LEPV, 'utf8'),
